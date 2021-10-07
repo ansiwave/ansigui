@@ -1,12 +1,10 @@
 import nimgl/opengl
 import paranim/gl, paranim/gl/entities
-import paratext, paratext/gl/text
 import stb_image/read as stbi
 from glm import vec4
-
-const ttf = staticRead("assets/3270-Regular.ttf")
-
-let font = initFont(ttf = ttf, fontHeight = 64, firstChar = 32, bitmapWidth = 512, bitmapHeight = 512, charCount = 2048)
+from text import nil
+from paratext/gl/text as ptext import nil
+from colors import nil
 
 type
   Game* = object of RootGame
@@ -18,28 +16,8 @@ type
     mouseY*: float
 
 var
-  count: int
-  baseEntity: UncompiledTextEntity
-  helloEntity: InstancedTextEntity
-  colorEntity: InstancedTextEntity
-  countEntity: InstancedTextEntity
-
-proc add(instancedEntity: var InstancedTextEntity, entity: UncompiledTextEntity, font: Font, text: string) =
-  var
-    x = 0f
-    i = 0
-  for ch in text:
-    let
-      charIndex = int(ch) - font.firstChar
-      bakedChar = font.chars[charIndex]
-    var e = entity
-    e.crop(bakedChar, x, font.baseline)
-    if i == instancedEntity.instanceCount:
-      instancedEntity.add(e)
-    else:
-      instancedEntity[i] = e
-    x += bakedChar.xadvance
-    i += 1
+  baseEntity: ptext.UncompiledTextEntity
+  textEntity: text.AnsiwaveTextEntity
 
 proc onKeyPress*(key: int) =
   discard
@@ -64,54 +42,19 @@ proc init*(game: var Game) =
   glDisable(GL_CULL_FACE)
   glDisable(GL_DEPTH_TEST)
 
-  baseEntity = initTextEntity(font)
-
-  let
-    uncompiledEntity = initInstancedEntity(baseEntity)
-    compiledEntity = compile(game, uncompiledEntity)
-
-  # we can create separate text entities by doing a copy
-  # on the compiled text entity.
-  # this ensures that they don't share attribute data.
-
-  helloEntity = gl.copy(compiledEntity)
-  helloEntity.add(baseEntity, font, "Hello, world!")
-
-  colorEntity = gl.copy(compiledEntity)
-  colorEntity.add(baseEntity, font, "Colors")
-
-  const colors = [
-    vec4(1f, 0f, 0f, 1f),
-    vec4(0f, 1f, 0f, 1f),
-    vec4(0f, 0f, 1f, 1f),
-  ]
-  for i in 0 ..< colorEntity.instanceCount:
-    var e = colorEntity[i]
-    e.color(colors[i mod colors.len])
-    colorEntity[i] = e
-
-  countEntity = gl.copy(compiledEntity)
+  baseEntity = ptext.initTextEntity(text.monoFont)
+  textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
 
 proc tick*(game: Game) =
   glClearColor(1f, 1f, 1f, 1f)
   glClear(GL_COLOR_BUFFER_BIT)
   glViewport(0, 0, GLsizei(game.frameWidth), GLsizei(game.frameHeight))
 
-  var e1 = helloEntity
-  e1.project(float(game.frameWidth), float(game.frameHeight))
-  e1.translate(0f, 0f)
-  render(game, e1)
-
-  var e2 = colorEntity
-  e2.project(float(game.frameWidth), float(game.frameHeight))
-  e2.translate(0f, 100f)
-  render(game, e2)
-
-  countEntity.add(baseEntity, font, "Frame count: " & $count)
-  count += 1
-
-  var e3 = countEntity
-  e3.project(float(game.frameWidth), float(game.frameHeight))
-  e3.translate(0f, 200f)
-  render(game, e3)
+  var e = gl.copy(textEntity)
+  text.updateUniforms(e, 0, 0, false)
+  for line in @["Hello, world!", "Goodbye, world!"]:
+    discard text.addLine(e, baseEntity, text.monoFont, colors.blackColor, line)
+  e.project(float(game.frameWidth), float(game.frameHeight))
+  e.translate(0f, 0f)
+  render(game, e)
 
