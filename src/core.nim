@@ -12,6 +12,8 @@ type
     totalTime*: float
     frameWidth*: int32
     frameHeight*: int32
+    windowWidth*: int32
+    windowHeight*: int32
     mouseX*: float
     mouseY*: float
 
@@ -54,7 +56,8 @@ proc tick*(game: Game) =
   text.updateUniforms(e, 0, 0, false)
   for line in @["Hello, world!", "Goodbye, world!"]:
     discard text.addLine(e, baseEntity, text.monoFont, colors.blackColor, line)
-  e.project(float(game.frameWidth), float(game.frameHeight))
+  e.project(float(game.windowWidth), float(game.windowHeight))
   e.translate(0f, 0f)
+  e.scale(1/2, 1/2)
   render(game, e)
 
