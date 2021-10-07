@@ -1,4 +1,4 @@
-#version 330
+#version $1
 uniform mat3 u_matrix;
 uniform int u_char_counts[1000];
 uniform int u_start_line;
@@ -29,7 +29,7 @@ void main()
     }
   }
   mat3 translate_matrix = a_translate_matrix;
-  translate_matrix[2][1] += u_font_height * (u_start_line + current_line);
+  translate_matrix[2][1] += u_font_height * float(u_start_line + current_line);
   int current_column = gl_InstanceID - total_char_count;
   if (u_start_column > current_column)
   {

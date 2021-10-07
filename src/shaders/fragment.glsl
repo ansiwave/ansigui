@@ -1,4 +1,4 @@
-#version 330
+#version $1
 precision mediump float;
 uniform sampler2D u_image;
 uniform float u_alpha;
@@ -45,7 +45,7 @@ void main()
     left_color = input_color;
   }
   // right
-  vec4 right_color = texture(u_image, v_tex_coord + vec2(0 - one_pixel.x, 0.0));
+  vec4 right_color = texture(u_image, v_tex_coord + vec2(0.0 - one_pixel.x, 0.0));
   if (right_color.rgb == vec3(0.0, 0.0, 0.0))
   {
     right_color = vec4(0.0, 0.0, 0.0, 0.0);
@@ -65,7 +65,7 @@ void main()
     top_color = input_color;
   }
   // bottom
-  vec4 bottom_color = texture(u_image, v_tex_coord + vec2(0.0, 0 - one_pixel.y));
+  vec4 bottom_color = texture(u_image, v_tex_coord + vec2(0.0, 0.0 - one_pixel.y));
   if (bottom_color.rgb == vec3(0.0, 0.0, 0.0))
   {
     bottom_color = vec4(0.0, 0.0, 0.0, 0.0);

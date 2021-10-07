@@ -5,11 +5,18 @@ import paratext, paratext/gl/text
 from colors import nil
 from math import nil
 import tables
+from strutils import format
+
+const version =
+  when defined(emscripten):
+    "300 es"
+  else:
+    "330"
 
 const
   monoFontRaw = staticRead("assets/3270-Regular.ttf")
-  instancedTextVertexShader = staticRead("shaders/vertex.glsl")
-  instancedTextFragmentShader = staticRead("shaders/fragment.glsl")
+  instancedTextVertexShader = staticRead("shaders/vertex.glsl").format(version)
+  instancedTextFragmentShader = staticRead("shaders/fragment.glsl").format(version)
 
 let
   monoFont* = initFont(ttf = monoFontRaw, fontHeight = 128, firstChar = 32, bitmapWidth = 1024, bitmapHeight = 1024, charCount = 2048)
