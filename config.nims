@@ -29,3 +29,6 @@ when defined(emscripten):
   switch("passL", "-o index.html -s USE_WEBGL2=1 --shell-file shell_minimal.html")
 elif defined(release):
   --app:gui
+
+--threads:on
+--define:chafa
