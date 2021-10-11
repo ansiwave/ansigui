@@ -30,5 +30,4 @@ when defined(emscripten):
 elif defined(release):
   --app:gui
 
---threads:on
 --define:chafa
