@@ -31,3 +31,7 @@ elif defined(release):
   --app:gui
 
 --define:chafa
+--define:staticSqlite
+
+when not defined(emscripten):
+  --threads:on
