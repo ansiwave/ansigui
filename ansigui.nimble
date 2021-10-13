@@ -14,6 +14,10 @@ task emscripten_dev, "Build the dev emscripten version":
   exec "nimble build -d:emscripten"
   exec "nimble build -d:emscripten -d:emscripten_worker"
 
+task emscripten, "Build the dev emscripten version":
+  exec "nimble build -d:release -d:emscripten"
+  exec "nimble build -d:release -d:emscripten -d:emscripten_worker"
+
 # Dependencies
 
 requires "nim >= 1.2.6"

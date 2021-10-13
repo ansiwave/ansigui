@@ -13,7 +13,7 @@ nimble build -d:release
 Or to make a release build for the web:
 
 ```
-nimble build -d:release -d:emscripten
+nimble emscripten
 ```
 
 NOTE: To build for the web, you must install Emscripten:
