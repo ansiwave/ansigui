@@ -5,7 +5,7 @@ when not defined(emscripten) or defined(emscripten_worker):
   vfs.register()
 
 when defined(emscripten_worker):
-  from wavecorepkg/client import nil
+  from wavecorepkg/client/emscripten import nil
 else:
   from gui import nil
   when isMainModule:
