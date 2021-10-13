@@ -10,6 +10,10 @@ bin           = @["ansigui"]
 task dev, "Run dev version":
   exec "nimble run ansigui"
 
+task emscripten_dev, "Build the dev emscripten version":
+  exec "nimble build -d:emscripten"
+  exec "nimble build -d:emscripten -d:emscripten_worker"
+
 # Dependencies
 
 requires "nim >= 1.2.6"

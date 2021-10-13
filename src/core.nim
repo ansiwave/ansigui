@@ -5,6 +5,17 @@ from glm import vec4
 from text import nil
 from paratext/gl/text as ptext import nil
 from colors import nil
+from ansiwavepkg/chafa import nil
+
+from wavecorepkg/client import nil
+from os import joinPath
+
+const
+  port = 3000
+  address = "http://localhost:" & $port
+
+var c = client.initClient(address)
+client.start(c)
 
 type
   Game* = object of RootGame
@@ -36,6 +47,10 @@ proc onMouseMove*(xpos: float, ypos: float) =
 proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, worldHeight: int) =
   discard
 
+var
+  root = client.query(c, "ansiwaves".joinPath("1.ansiwave"))
+  #threads = client.queryPostChildren(c, "board.db", 1)
+
 proc init*(game: var Game) =
   doAssert glInit()
 
@@ -46,6 +61,11 @@ proc init*(game: var Game) =
 
   baseEntity = ptext.initTextEntity(text.monoFont)
   textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
+
+  const img = staticRead("aintgottaexplainshit.jpg")
+  echo chafa.imageToAnsi(img, 80)
+
+var canGetIndex = true
 
 proc tick*(game: Game) =
   glClearColor(1f, 1f, 1f, 1f)
@@ -60,4 +80,9 @@ proc tick*(game: Game) =
   e.translate(0f, 0f)
   e.scale(1/2, 1/2)
   render(game, e)
+
+  client.get(root)
+  if root.ready:
+    echo root.value.valid.body
+    root.ready = false
 

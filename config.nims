@@ -26,7 +26,10 @@ when defined(emscripten):
   --opt:size
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
-  switch("passL", "-o index.html -s USE_WEBGL2=1 --shell-file shell_minimal.html")
+  when defined(emscripten_worker):
+    switch("passL", "-o worker.js -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_recvAction']\" -s BUILD_AS_WORKER")
+  else:
+    switch("passL", "-o index.html -s USE_WEBGL2=1 --shell-file shell_minimal.html")
 elif defined(release):
   --app:gui
 
