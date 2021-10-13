@@ -4,17 +4,13 @@ import stb_image/read as stbi
 from glm import vec4
 from text import nil
 from paratext/gl/text as ptext import nil
-from colors import nil
+from constants import nil
 from ansiwavepkg/chafa import nil
 
 from wavecorepkg/client import nil
 from os import joinPath
 
-const
-  port = 3000
-  address = "http://localhost:" & $port
-
-var c = client.initClient(address)
+var c = client.initClient(constants.address)
 client.start(c)
 
 type
@@ -49,7 +45,7 @@ proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, world
 
 var
   root = client.query(c, "ansiwaves".joinPath("1.ansiwave"))
-  #threads = client.queryPostChildren(c, "board.db", 1)
+  #threads = client.queryPostChildren(c, constants.dbFilename, 1)
 
 proc init*(game: var Game) =
   doAssert glInit()
@@ -75,7 +71,7 @@ proc tick*(game: Game) =
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
   for line in @["Hello, world!", "Goodbye, world!"]:
-    discard text.addLine(e, baseEntity, text.monoFont, colors.blackColor, line)
+    discard text.addLine(e, baseEntity, text.monoFont, constants.blackColor, line)
   e.project(float(game.windowWidth), float(game.windowHeight))
   e.translate(0f, 0f)
   e.scale(1/2, 1/2)
