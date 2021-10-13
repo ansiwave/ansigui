@@ -61,7 +61,7 @@ proc init*(game: var Game) =
   const img = staticRead("aintgottaexplainshit.jpg")
   echo chafa.imageToAnsi(img, 80)
 
-var canGetIndex = true
+var printRoot = true
 
 proc tick*(game: Game) =
   glClearColor(1f, 1f, 1f, 1f)
@@ -78,7 +78,7 @@ proc tick*(game: Game) =
   render(game, e)
 
   client.get(root)
-  if root.ready:
+  if root.ready and printRoot:
     echo root.value.valid.body
-    root.ready = false
+    printRoot = false
 
