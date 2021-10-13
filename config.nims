@@ -27,7 +27,7 @@ when defined(emscripten):
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
   when defined(emscripten_worker):
-    switch("passL", "-o worker.js -s USE_WEBGL2=1 -s ASYNCIFY=1 -s EXPORTED_FUNCTIONS=\"['_main','_recvAction']\" -s BUILD_AS_WORKER")
+    switch("passL", "-o worker.js -s USE_WEBGL2=1 -s FETCH=1 -s EXPORTED_FUNCTIONS=\"['_main','_recvAction']\" -s BUILD_AS_WORKER")
   else:
     switch("passL", "-o index.html -s USE_WEBGL2=1 --shell-file shell_minimal.html")
 elif defined(release):
@@ -35,8 +35,7 @@ elif defined(release):
 
 --define:chafa
 
-when not defined(emscripten) or defined(emscripten_worker):
-  --define:staticSqlite
+--define:staticSqlite
 
 when not defined(emscripten):
   --threads:on

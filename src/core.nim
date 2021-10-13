@@ -45,7 +45,7 @@ proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, world
 
 var
   root = client.query(c, "ansiwaves".joinPath("1.ansiwave"))
-  #threads = client.queryPostChildren(c, constants.dbFilename, 1)
+  threads = client.queryPostChildren(c, constants.dbFilename, 1)
 
 proc init*(game: var Game) =
   doAssert glInit()
@@ -60,8 +60,6 @@ proc init*(game: var Game) =
 
   const img = staticRead("aintgottaexplainshit.jpg")
   echo chafa.imageToAnsi(img, 80)
-
-var printRoot = true
 
 proc tick*(game: Game) =
   glClearColor(1f, 1f, 1f, 1f)
@@ -78,7 +76,10 @@ proc tick*(game: Game) =
   render(game, e)
 
   client.get(root)
-  if root.ready and printRoot:
+  if root.ready:
     echo root.value.valid.body
-    printRoot = false
+
+  client.get(threads)
+  if threads.ready:
+    echo threads.value.valid
 
