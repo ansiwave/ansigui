@@ -61,6 +61,9 @@ proc init*(game: var Game) =
   const img = staticRead("aintgottaexplainshit.jpg")
   echo chafa.imageToAnsi(img, 80)
 
+import sets
+var printed: HashSet[string]
+
 proc tick*(game: Game) =
   glClearColor(1f, 1f, 1f, 1f)
   glClear(GL_COLOR_BUFFER_BIT)
@@ -76,10 +79,12 @@ proc tick*(game: Game) =
   render(game, e)
 
   client.get(root)
-  if root.ready:
+  if root.ready and not printed.contains("root"):
     echo root.value.valid.body
+    printed.incl("root")
 
   client.get(threads)
-  if threads.ready:
+  if threads.ready and not printed.contains("threads"):
     echo threads.value.valid
+    printed.incl("threads")
 
