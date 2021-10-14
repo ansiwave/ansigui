@@ -66,7 +66,7 @@ proc main*() =
   glfwWindowHint(GLFWOpenglProfile, GLFW_OPENGL_CORE_PROFILE)
   glfwWindowHint(GLFWResizable, GLFW_TRUE)
 
-  window = glfwCreateWindow(1024, 768, "Parakeet")
+  window = glfwCreateWindow(1024, 768, "ANSIWAVE")
   if window == nil:
     quit(-1)
 
