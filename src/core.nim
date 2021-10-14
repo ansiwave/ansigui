@@ -45,6 +45,8 @@ proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, world
 
 var
   root = client.query(c, "ansiwaves".joinPath("1.ansiwave"))
+  user = client.queryUser(c, constants.dbFilename, "Alice")
+  post = client.queryPost(c, constants.dbFilename, 4)
   threads = client.queryPostChildren(c, constants.dbFilename, 1)
 
 proc init*(game: var Game) =
@@ -82,6 +84,16 @@ proc tick*(game: Game) =
   if root.ready and not printed.contains("root"):
     echo root.value.valid.body
     printed.incl("root")
+
+  client.get(user)
+  if user.ready and not printed.contains("user"):
+    echo user.value.valid
+    printed.incl("user")
+
+  client.get(post)
+  if post.ready and not printed.contains("post"):
+    echo post.value.valid
+    printed.incl("post")
 
   client.get(threads)
   if threads.ready and not printed.contains("threads"):
