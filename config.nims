@@ -35,7 +35,8 @@ elif defined(release):
 
 --define:chafa
 
---define:staticSqlite
+when not defined(emscripten) or defined(emscripten_worker):
+  --define:staticSqlite
 
 when not defined(emscripten):
   --threads:on
