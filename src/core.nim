@@ -44,7 +44,7 @@ proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, world
   discard
 
 var
-  root = client.query(c, "ansiwaves".joinPath("1.ansiwave"))
+  root = client.query(c, "ansiwaves".joinPath("1.ansiwavez"))
   user = client.queryUser(c, constants.dbFilename, "Alice")
   post = client.queryPost(c, constants.dbFilename, 4)
   threads = client.queryPostChildren(c, constants.dbFilename, 1)
