@@ -6,6 +6,7 @@ from colors import nil
 from math import nil
 import tables
 from strutils import format
+import unicode
 
 const version =
   when defined(emscripten):
@@ -181,12 +182,14 @@ proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int, endLine
 proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int) =
   cropLines(instancedEntity, startLine, instancedEntity.uniforms.u_char_counts.data.len)
 
+#proc stbtt_FindGlyphIndex(info: ptr stbtt_fontinfo; unicode_codepoint: cint): cint {.cdecl, importc: "stbtt_FindGlyphIndex".}
+
 proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: Font, fontColor: glm.Vec4[GLfloat], text: string, startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
   result = startPos
-  for i in 0 ..< text.len:
+  var i = 0
+  for ch in text.toRunes:
     let
-      ch = text[i]
       charIndex = int(ch) - font.firstChar
       bakedChar =
         if charIndex >= 0 and charIndex < font.chars.len:
