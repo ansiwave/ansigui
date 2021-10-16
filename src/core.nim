@@ -26,6 +26,7 @@ type
 
 var
   baseEntity: ptext.UncompiledTextEntity
+  fontEntity: ptext.TextEntity
   textEntity: text.AnsiwaveTextEntity
 
 proc onKeyPress*(key: int) =
@@ -57,8 +58,14 @@ proc init*(game: var Game) =
   glDisable(GL_CULL_FACE)
   glDisable(GL_DEPTH_TEST)
 
-  baseEntity = ptext.initTextEntity(text.monoFont)
-  textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
+  #baseEntity = ptext.initTextEntity(text.monoFont)
+  #textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
+
+  var uncompiledEntity = ptext.initTextEntity(text.monoFont)
+  uncompiledEntity.project(float(game.frameWidth), float(game.frameHeight))
+  uncompiledEntity.translate(0f, 0f)
+  uncompiledEntity.scale(float(text.monoFont.bitmap.width), float(text.monoFont.bitmap.height))
+  fontEntity = compile(game, uncompiledEntity)
 
   const img = staticRead("aintgottaexplainshit.jpg")
   echo chafa.imageToAnsi(img, 80)
@@ -71,14 +78,18 @@ proc tick*(game: Game) =
   glClear(GL_COLOR_BUFFER_BIT)
   glViewport(0, 0, GLsizei(game.frameWidth), GLsizei(game.frameHeight))
 
+#[
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
-  for line in @["Hello, world!", "Goodbye, world!"]:
+  for line in @["Hello, world!", "Goodbye, world!", "█▓▒░▀▄▌▐"]:
     discard text.addLine(e, baseEntity, text.monoFont, constants.blackColor, line)
   e.project(float(game.windowWidth), float(game.windowHeight))
   e.translate(0f, 0f)
   e.scale(1/2, 1/2)
   render(game, e)
+]#
+
+  render(game, fontEntity)
 
   client.get(root)
   if root.ready and root.value.kind == client.Valid and not printed.contains("root"):

@@ -80,9 +80,6 @@ proc main*() =
   discard window.setFramebufferSizeCallback(frameSizeCallback)
   discard window.setScrollCallback(scrollCallback)
 
-  game = Game()
-  game.init()
-
   var width, height: int32
   window.getFramebufferSize(width.addr, height.addr)
 
@@ -92,6 +89,7 @@ proc main*() =
   density = max(1, int(width / windowWidth))
   window.frameSizeCallback(width, height)
 
+  game.init()
   game.totalTime = glfwGetTime()
 
   when defined(emscripten):
