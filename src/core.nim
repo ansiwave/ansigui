@@ -81,22 +81,22 @@ proc tick*(game: Game) =
   render(game, e)
 
   client.get(root)
-  if root.ready and not printed.contains("root"):
+  if root.ready and root.value.kind == client.Valid and not printed.contains("root"):
     echo root.value.valid.body
     printed.incl("root")
 
   client.get(user)
-  if user.ready and not printed.contains("user"):
+  if user.ready and user.value.kind == client.Valid and not printed.contains("user"):
     echo user.value.valid
     printed.incl("user")
 
   client.get(post)
-  if post.ready and not printed.contains("post"):
+  if post.ready and post.value.kind == client.Valid and not printed.contains("post"):
     echo post.value.valid
     printed.incl("post")
 
   client.get(threads)
-  if threads.ready and not printed.contains("threads"):
+  if threads.ready and threads.value.kind == client.Valid and not printed.contains("threads"):
     echo threads.value.valid
     printed.incl("threads")
 
