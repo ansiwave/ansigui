@@ -17,10 +17,10 @@ type
   Game* = object of RootGame
     deltaTime*: float
     totalTime*: float
-    frameWidth*: int32
-    frameHeight*: int32
     windowWidth*: int32
     windowHeight*: int32
+    worldWidth*: int32
+    worldHeight*: int32
     mouseX*: float
     mouseY*: float
 
@@ -62,9 +62,9 @@ proc init*(game: var Game) =
   #textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
 
   var uncompiledEntity = ptext.initTextEntity(text.monoFont)
-  uncompiledEntity.project(float(game.frameWidth), float(game.frameHeight))
+  uncompiledEntity.project(float(game.worldWidth), float(game.worldHeight))
   uncompiledEntity.translate(0f, 0f)
-  uncompiledEntity.scale(float(text.monoFont.bitmap.width), float(text.monoFont.bitmap.height))
+  uncompiledEntity.scale(float(text.monoFont.bitmap.width) / 2, float(text.monoFont.bitmap.height) / 2)
   fontEntity = compile(game, uncompiledEntity)
 
   const img = staticRead("aintgottaexplainshit.jpg")
@@ -76,14 +76,14 @@ var printed: HashSet[string]
 proc tick*(game: Game) =
   glClearColor(1f, 1f, 1f, 1f)
   glClear(GL_COLOR_BUFFER_BIT)
-  glViewport(0, 0, GLsizei(game.frameWidth), GLsizei(game.frameHeight))
+  glViewport(0, 0, GLsizei(game.windowWidth), GLsizei(game.windowHeight))
 
 #[
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
   for line in @["Hello, world!", "Goodbye, world!", "█▓▒░▀▄▌▐"]:
     discard text.addLine(e, baseEntity, text.monoFont, constants.blackColor, line)
-  e.project(float(game.windowWidth), float(game.windowHeight))
+  e.project(float(game.worldWidth), float(game.worldHeight))
   e.translate(0f, 0f)
   e.scale(1/2, 1/2)
   render(game, e)

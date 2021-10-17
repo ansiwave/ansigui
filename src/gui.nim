@@ -27,11 +27,11 @@ proc mousePositionCallback(window: GLFWWindow, xpos: float64, ypos: float64): vo
   game.mouseY = ypos
 
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
-  game.frameWidth = width
-  game.frameHeight = height
-  game.windowWidth = int32(width / density)
-  game.windowHeight = int32(height / density)
-  onWindowResize(game.frameWidth, game.frameHeight, game.windowWidth, game.windowHeight)
+  game.windowWidth = width
+  game.windowHeight = height
+  game.worldWidth = int32(width / density)
+  game.worldHeight = int32(height / density)
+  onWindowResize(game.windowWidth, game.windowHeight, game.worldWidth, game.worldHeight)
 
 proc scrollCallback(window: GLFWWindow, xoffset: float64, yoffset: float64) {.cdecl.} =
   discard
