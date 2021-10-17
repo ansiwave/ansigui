@@ -7,6 +7,7 @@ from math import nil
 import tables
 from strutils import format
 import unicode
+from constants import nil
 
 const version =
   when defined(emscripten):
@@ -20,7 +21,9 @@ const
   instancedTextFragmentShader = staticRead("shaders/fragment.glsl").format(version)
 
 let
-  monoFont* = initFont(ttf = monoFontRaw, fontHeight = 128, firstChar = 32, bitmapWidth = 1024, bitmapHeight = 1024, charCount = 2048)
+  monoFont* = initFont(ttf = monoFontRaw, fontHeight = 160,
+                       ranges = constants.x3270Ranges,
+                       bitmapWidth = 4096, bitmapHeight = 4096, charCount = 2048)
   monoFontWidth* = monoFont.chars[0].xadvance
 
 type
@@ -44,7 +47,7 @@ type
   AnsiwaveTextEntity* = object of InstancedEntity[AnsiwaveTextEntityUniforms, AnsiwaveTextEntityAttributes]
   UncompiledAnsiwaveTextEntity = object of UncompiledEntity[AnsiwaveTextEntity, AnsiwaveTextEntityUniforms, AnsiwaveTextEntityAttributes]
 
-proc initInstancedEntity*(entity: UncompiledTextEntity, font: Font): UncompiledAnsiwaveTextEntity =
+proc initInstancedEntity*(entity: UncompiledTextEntity, font: PackedFont): UncompiledAnsiwaveTextEntity =
   let e = gl.copy(entity) # make a copy to prevent unexpected problems if `entity` is changed later
   result.vertexSource = instancedTextVertexShader
   result.fragmentSource = instancedTextFragmentShader
@@ -182,15 +185,25 @@ proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int, endLine
 proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int) =
   cropLines(instancedEntity, startLine, instancedEntity.uniforms.u_char_counts.data.len)
 
-#proc stbtt_FindGlyphIndex(info: ptr stbtt_fontinfo; unicode_codepoint: cint): cint {.cdecl, importc: "stbtt_FindGlyphIndex".}
+proc unicodeToIndex(codepoint: int32): int32 =
+  result = 0
+  for (first, last) in constants.x3270Ranges:
+    if codepoint > last:
+      result += last - first + 1
+    elif codepoint >= first and codepoint <= last:
+      result += codepoint - first
+      break
+    else:
+      result = -1
+      break
 
-proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: Font, fontColor: glm.Vec4[GLfloat], text: string, startPos: float): float =
+proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: string, startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
   result = startPos
   var i = 0
   for ch in text.toRunes:
     let
-      charIndex = int(ch) - font.firstChar
+      charIndex = unicodeToIndex(ch.int32)
       bakedChar =
         if charIndex >= 0 and charIndex < font.chars.len:
           font.chars[charIndex]
@@ -203,7 +216,7 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
     instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     result += bakedChar.xadvance
 
-proc addLine*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: Font, fontColor: glm.Vec4[GLfloat], text: string): float =
+proc addLine*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: string): float =
   instancedEntity.uniforms.u_char_counts.data.add(0)
   instancedEntity.uniforms.u_char_counts.disable = false
   add(instancedEntity, entity, font, fontColor, text, 0f)
