@@ -10,13 +10,9 @@ bin           = @["ansigui"]
 task dev, "Run dev version":
   exec "nimble run ansigui"
 
-task emscripten_dev, "Build the dev emscripten version":
+task emscripten, "Build the emscripten version":
   exec "nimble build -d:emscripten"
   exec "nimble build -d:emscripten -d:emscripten_worker"
-
-task emscripten, "Build the dev emscripten version":
-  exec "nimble build -d:release -d:emscripten"
-  exec "nimble build -d:release -d:emscripten -d:emscripten_worker"
 
 # Dependencies
 
