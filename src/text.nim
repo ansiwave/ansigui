@@ -197,6 +197,9 @@ proc unicodeToIndex(codepoint: int32): int32 =
       result = -1
       break
 
+const notFoundCharIndex = unicodeToIndex(9633)
+static: assert notFoundCharIndex >= 0
+
 proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: string, startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
   result = startPos
@@ -207,8 +210,8 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
       bakedChar =
         if charIndex >= 0 and charIndex < font.chars.len:
           font.chars[charIndex]
-        else: # if char isn't found, use the space char
-          font.chars[0]
+        else: # if char isn't found, use a default one
+          font.chars[notFoundCharIndex]
     var e = entity
     e.crop(bakedChar, result, font.baseline)
     e.color(fontColor)

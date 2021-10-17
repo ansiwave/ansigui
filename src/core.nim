@@ -80,7 +80,7 @@ proc tick*(game: Game) =
 
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
-  for line in @["Hello, world!", "Goodbye, world!", "█▓▒░▀▄▌▐", "£€⍟☺"]:
+  for line in @["Hello, world!", "Goodbye, world!", "█▓▒░▀▄▌▐", "£€⍟☺", "こんにちは"]:
     discard text.addLine(e, baseEntity, text.monoFont, constants.blackColor, line)
   e.project(float(game.worldWidth), float(game.worldHeight))
   e.translate(0f, 0f)
