@@ -73,14 +73,14 @@ import sets
 var printed: HashSet[string]
 
 proc tick*(game: Game) =
-  glClearColor(1f, 1f, 1f, 1f)
+  glClearColor(constants.bgColor.arr[0], constants.bgColor.arr[1], constants.bgColor.arr[2], constants.bgColor.arr[3])
   glClear(GL_COLOR_BUFFER_BIT)
   glViewport(0, 0, GLsizei(game.windowWidth), GLsizei(game.windowHeight))
 
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
   for line in @["Hello, world!", "Goodbye, world!", "█▓▒░▀▄▌▐", "£€⍟☺", "こんにちは"]:
-    discard text.addLine(e, baseEntity, text.monoFont, constants.blackColor, line)
+    discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
   e.project(float(game.worldWidth), float(game.worldHeight))
   e.translate(0f, 0f)
   e.scale(1/2, 1/2)

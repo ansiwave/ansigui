@@ -5,6 +5,8 @@ const
   port* = 3000
   address* = "http://localhost:" & $port
   dbFilename* = "board.db"
+  bgColor* = glm.vec4(Glfloat(0/255), GLfloat(16/255), GLfloat(64/255), GLfloat(0.95))
+  textColor* = glm.vec4(Glfloat(192/255), GLfloat(192/255), GLfloat(192/255), 1f)
   blackColor* = glm.vec4(Glfloat(0), GLfloat(0), GLfloat(0), GLfloat(1.0))
   yellowColor* = glm.vec4(Glfloat(255/255), GLfloat(193/255), GLfloat(94/255), GLfloat(1.0))
   tanColor* = glm.vec4(Glfloat(209/255), GLfloat(153/255), GLfloat(101/255), GLfloat(1.0))

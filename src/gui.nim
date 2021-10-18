@@ -65,6 +65,7 @@ proc main*() =
   glfwWindowHint(GLFWOpenglForwardCompat, GLFW_TRUE) # Used for Mac
   glfwWindowHint(GLFWOpenglProfile, GLFW_OPENGL_CORE_PROFILE)
   glfwWindowHint(GLFWResizable, GLFW_TRUE)
+  glfwWindowHint(GLFWTransparentFramebuffer, GLFW_TRUE)
 
   window = glfwCreateWindow(1024, 768, "ANSIWAVE")
   if window == nil:
