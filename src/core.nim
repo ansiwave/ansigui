@@ -1,6 +1,5 @@
 import nimgl/opengl
 import paranim/gl, paranim/gl/entities
-import stb_image/read as stbi
 from glm import vec4
 from text import nil
 from paratext/gl/text as ptext import nil
@@ -67,8 +66,8 @@ proc init*(game: var Game) =
   uncompiledEntity.scale(float(text.monoFont.bitmap.width) / 4, float(text.monoFont.bitmap.height) / 4)
   fontEntity = compile(game, uncompiledEntity)
 
-  const img = staticRead("aintgottaexplainshit.jpg")
-  echo chafa.imageToAnsi(img, 80)
+  #const img = staticRead("aintgottaexplainshit.jpg")
+  #echo chafa.imageToAnsi(img, 80)
 
 import sets
 var printed: HashSet[string]
