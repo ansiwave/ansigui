@@ -21,9 +21,9 @@ const
   instancedTextFragmentShader = staticRead("shaders/fragment.glsl").format(version)
 
 let
-  monoFont* = initFont(ttf = monoFontRaw, fontHeight = 160,
+  monoFont* = initFont(ttf = monoFontRaw, fontHeight = 80,
                        ranges = constants.x3270Ranges,
-                       bitmapWidth = 4096, bitmapHeight = 4096, charCount = 2048)
+                       bitmapWidth = 2048, bitmapHeight = 2048, charCount = 2048)
   monoFontWidth* = monoFont.chars[0].xadvance
 
 type
