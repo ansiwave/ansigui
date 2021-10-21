@@ -185,20 +185,7 @@ proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int, endLine
 proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int) =
   cropLines(instancedEntity, startLine, instancedEntity.uniforms.u_char_counts.data.len)
 
-proc unicodeToIndex(codepoint: int32): int32 =
-  result = 0
-  for (first, last) in constants.x3270Ranges:
-    if codepoint > last:
-      result += last - first + 1
-    elif codepoint >= first and codepoint <= last:
-      result += codepoint - first
-      break
-    else:
-      result = -1
-      break
-
-const notFoundCharIndex = unicodeToIndex(9633)
-static: assert notFoundCharIndex >= 0
+const notFoundCharIndex = constants.codepointToGlyph[9633]
 
 proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[Rune], startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
@@ -206,10 +193,9 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
   var i = 0
   for ch in text:
     let
-      charIndex = unicodeToIndex(ch.int32)
       bakedChar =
-        if charIndex >= 0 and charIndex < font.chars.len:
-          font.chars[charIndex]
+        if constants.codepointToGlyph.hasKey(ch.int32):
+          font.chars[constants.codepointToGlyph[ch.int32]]
         else: # if char isn't found, use a default one
           font.chars[notFoundCharIndex]
     var e = entity

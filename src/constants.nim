@@ -1,5 +1,6 @@
 import nimgl/opengl
 from glm import nil
+import tables
 
 const
   port* = 3000
@@ -209,3 +210,12 @@ const
     (65504'i32, 65518'i32),
     (65532'i32, 65534'i32),
   ]
+  codepointToGlyph* = block:
+    var
+      t: Table[int32, int32]
+      glyphIndex = 0'i32
+    for (first, last) in x3270Ranges:
+      for cp in first..last:
+        t[cp] = glyphIndex
+        glyphIndex += 1
+    t
