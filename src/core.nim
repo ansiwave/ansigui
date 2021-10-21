@@ -77,15 +77,16 @@ proc tick*(game: Game) =
   var tb = iw.newTerminalBuffer(windowWidth, windowHeight)
   bbs.renderBBS(tb, root, threads)
 
-  var e = gl.copy(textEntity)
-  text.updateUniforms(e, 0, 0, false)
-  for y in 0 ..< windowHeight:
-    var line: seq[Rune]
-    for x in 0 ..< windowWidth:
-      line.add(tb[x, y].ch)
-    discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
-  e.project(float(game.worldWidth), float(game.worldHeight))
-  e.translate(0f, 0f)
-  e.scale(fontMultiplier, fontMultiplier)
-  render(game, e)
+  if root.ready and threads.ready:
+    var e = gl.copy(textEntity)
+    text.updateUniforms(e, 0, 0, false)
+    for y in 0 ..< windowHeight:
+      var line: seq[Rune]
+      for x in 0 ..< windowWidth:
+        line.add(tb[x, y].ch)
+      discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
+    e.project(float(game.worldWidth), float(game.worldHeight))
+    e.translate(0f, 0f)
+    e.scale(fontMultiplier, fontMultiplier)
+    render(game, e)
 
