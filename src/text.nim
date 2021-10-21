@@ -2,7 +2,6 @@ import nimgl/opengl, glm
 import paranim/gl, paranim/gl/uniforms, paranim/gl/attributes
 from paranim/gl/entities import crop, color
 import paratext, paratext/gl/text
-from colors import nil
 from math import nil
 import tables
 from strutils import format
