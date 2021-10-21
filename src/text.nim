@@ -200,11 +200,11 @@ proc unicodeToIndex(codepoint: int32): int32 =
 const notFoundCharIndex = unicodeToIndex(9633)
 static: assert notFoundCharIndex >= 0
 
-proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: string, startPos: float): float =
+proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[Rune], startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
   result = startPos
   var i = 0
-  for ch in text.toRunes:
+  for ch in text:
     let
       charIndex = unicodeToIndex(ch.int32)
       bakedChar =
@@ -219,7 +219,7 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
     instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     result += bakedChar.xadvance
 
-proc addLine*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: string): float =
+proc addLine*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[Rune]): float =
   instancedEntity.uniforms.u_char_counts.data.add(0)
   instancedEntity.uniforms.u_char_counts.disable = false
   add(instancedEntity, entity, font, fontColor, text, 0f)
