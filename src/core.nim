@@ -65,7 +65,7 @@ proc init*(game: var Game) =
   #const img = staticRead("aintgottaexplainshit.jpg")
   #echo chafa.imageToAnsi(img, 80)
 
-proc tick*(game: Game) =
+proc tick*(game: Game): bool =
   glClearColor(constants.bgColor.arr[0], constants.bgColor.arr[1], constants.bgColor.arr[2], constants.bgColor.arr[3])
   glClear(GL_COLOR_BUFFER_BIT)
   glViewport(0, 0, GLsizei(game.windowWidth), GLsizei(game.windowHeight))
@@ -77,7 +77,9 @@ proc tick*(game: Game) =
   var tb = iw.newTerminalBuffer(windowWidth, windowHeight)
   bbs.renderBBS(tb, root, threads)
 
-  if root.ready and threads.ready:
+  result = not root.ready or not threads.ready
+
+  if not result:
     var e = gl.copy(textEntity)
     text.updateUniforms(e, 0, 0, false)
     for y in 0 ..< windowHeight:

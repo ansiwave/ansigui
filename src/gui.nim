@@ -44,18 +44,23 @@ proc mainLoop() {.cdecl.} =
   let ts = glfwGetTime()
   game.deltaTime = ts - game.totalTime
   game.totalTime = ts
-  when defined(emscripten):
-    var width, height: cint
-    if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
-      window.frameSizeCallback(width, height)
-    try:
+  let mustPoll =
+    when defined(emscripten):
+      var width, height: cint
+      if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
+        window.frameSizeCallback(width, height)
+      try:
+        game.tick()
+      except Exception as ex:
+        echo ex.msg
+        false
+    else:
       game.tick()
-    except Exception as ex:
-      echo ex.msg
-  else:
-    game.tick()
   window.swapBuffers()
-  glfwPollEvents()
+  if mustPoll:
+    glfwPollEvents()
+  else:
+    glfwWaitEvents()
 
 proc main*() =
   doAssert glfwInit()
