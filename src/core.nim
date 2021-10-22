@@ -1,9 +1,9 @@
 import nimgl/opengl
 import paranim/gl, paranim/gl/entities
 from glm import vec4
-from text import nil
+from ./text import nil
 from paratext/gl/text as ptext import nil
-from constants import nil
+from ./constants import nil
 
 #from ansiwavepkg/chafa import nil
 from ansiwavepkg/bbs import nil

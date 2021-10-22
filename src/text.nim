@@ -6,7 +6,7 @@ from math import nil
 import tables
 from strutils import format
 import unicode
-from constants import nil
+from ./constants import nil
 
 const version =
   when defined(emscripten):
