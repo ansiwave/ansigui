@@ -44,7 +44,7 @@ proc mainLoop() {.cdecl.} =
   let ts = glfwGetTime()
   game.deltaTime = ts - game.totalTime
   game.totalTime = ts
-  let mustPoll =
+  let canSleep =
     when defined(emscripten):
       var width, height: cint
       if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
@@ -57,10 +57,10 @@ proc mainLoop() {.cdecl.} =
     else:
       game.tick()
   window.swapBuffers()
-  if mustPoll:
-    glfwPollEvents()
-  else:
+  if canSleep:
     glfwWaitEvents()
+  else:
+    glfwPollEvents()
 
 proc main*() =
   doAssert glfwInit()

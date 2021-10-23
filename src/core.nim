@@ -7,7 +7,7 @@ from ./constants import nil
 
 #from ansiwavepkg/chafa import nil
 from ansiwavepkg/bbs import nil
-from illwill as iw import `[]`, `[]=`
+from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import unicode
 
 from wavecorepkg/client import nil
@@ -47,9 +47,7 @@ proc onMouseMove*(xpos: float, ypos: float) =
 proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, worldHeight: int) =
   discard
 
-var
-  root = client.query(c, "ansiwaves".joinPath("1.ansiwavez"))
-  threads = client.queryPostChildren(c, constants.dbFilename, 1)
+var session = bbs.initSession(c)
 
 proc init*(game: var Game) =
   doAssert glInit()
@@ -74,21 +72,17 @@ proc tick*(game: Game): bool =
     fontHeight = text.monoFont.height * fontMultiplier
     windowWidth = int(game.worldWidth.float / (fontHeight / 2))
     windowHeight = int(game.worldHeight.float / fontHeight)
-  var tb = iw.newTerminalBuffer(windowWidth, windowHeight)
-  bbs.renderBBS(tb, root, threads)
+  let tb = bbs.render(session, windowWidth, windowHeight, iw.Key.None, result)
 
-  result = not root.ready or not threads.ready
-
-  if not result:
-    var e = gl.copy(textEntity)
-    text.updateUniforms(e, 0, 0, false)
-    for y in 0 ..< windowHeight:
-      var line: seq[Rune]
-      for x in 0 ..< windowWidth:
-        line.add(tb[x, y].ch)
-      discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
-    e.project(float(game.worldWidth), float(game.worldHeight))
-    e.translate(0f, 0f)
-    e.scale(fontMultiplier, fontMultiplier)
-    render(game, e)
+  var e = gl.copy(textEntity)
+  text.updateUniforms(e, 0, 0, false)
+  for y in 0 ..< windowHeight:
+    var line: seq[Rune]
+    for x in 0 ..< windowWidth:
+      line.add(tb[x, y].ch)
+    discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
+  e.project(float(game.worldWidth), float(game.worldHeight))
+  e.translate(0f, 0f)
+  e.scale(fontMultiplier, fontMultiplier)
+  render(game, e)
 
