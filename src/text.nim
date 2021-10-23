@@ -22,7 +22,7 @@ const
 let
   monoFont* = initFont(ttf = monoFontRaw, fontHeight = 80,
                        ranges = constants.x3270Ranges,
-                       bitmapWidth = 2048, bitmapHeight = 2048, charCount = 2048)
+                       bitmapWidth = 2048, bitmapHeight = 2048, charCount = constants.x3270CharCount)
   monoFontWidth* = monoFont.chars[0].xadvance
 
 type

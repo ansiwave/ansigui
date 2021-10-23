@@ -219,3 +219,4 @@ const
         t[cp] = glyphIndex
         glyphIndex += 1
     t
+  x3270CharCount* = codepointToGlyph.len
