@@ -4,6 +4,7 @@ from glm import vec4
 from ./text import nil
 from paratext/gl/text as ptext import nil
 from ./constants import nil
+import deques
 
 #from ansiwavepkg/chafa import nil
 from ansiwavepkg/bbs import nil
@@ -31,11 +32,12 @@ var
   baseEntity: ptext.UncompiledTextEntity
   textEntity: text.AnsiwaveTextEntity
   fontMultiplier = 1/4
+  keyQueue: Deque[iw.Key]
 
-proc onKeyPress*(key: int) =
-  discard
+proc onKeyPress*(key: iw.Key) =
+  keyQueue.addLast(key)
 
-proc onKeyRelease*(key: int) =
+proc onKeyRelease*(key: iw.Key) =
   discard
 
 proc onMouseClick*(button: int) =
@@ -72,7 +74,10 @@ proc tick*(game: Game): bool =
     fontHeight = text.monoFont.height * fontMultiplier
     windowWidth = int(game.worldWidth.float / (fontHeight / 2))
     windowHeight = int(game.worldHeight.float / fontHeight)
-  let tb = bbs.render(session, windowWidth, windowHeight, iw.Key.None, result)
+    key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
+  let tb = bbs.render(session, windowWidth, windowHeight, key, result)
+
+  result = result and keyQueue.len == 0
 
   if result:
     var e = gl.copy(textEntity)

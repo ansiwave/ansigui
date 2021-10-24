@@ -1,5 +1,22 @@
 import nimgl/glfw
 import core
+from ansiwavepkg/illwill as iw import `[]`, `[]=`
+import tables
+
+const glfwToIllwill =
+  {GLFWKey.BACKSPACE: iw.Key.Backspace,
+   GLFWKey.DELETE: iw.Key.Delete,
+   GLFWKey.TAB: iw.Key.Tab,
+   GLFWKey.ENTER: iw.Key.Enter,
+   GLFWKey.ESCAPE: iw.Key.Escape,
+   GLFWKey.UP: iw.Key.Up,
+   GLFWKey.DOWN: iw.Key.Down,
+   GLFWKey.LEFT: iw.Key.Left,
+   GLFWKey.RIGHT: iw.Key.Right,
+   GLFWKey.HOME: iw.Key.Home,
+   GLFWKey.END: iw.Key.End,
+   GLFWKey.PAGE_UP: iw.Key.PageUp,
+   GLFWKey.PAGE_DOWN: iw.Key.PageDown}.toTable
 
 var
   game: Game
@@ -7,10 +24,12 @@ var
   density: int
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
-  if action == GLFW_PRESS:
-    onKeyPress(key)
-  elif action == GLFW_RELEASE:
-    onKeyRelease(key)
+  if glfwToIllwill.hasKey(key):
+    let iwKey = glfwToIllwill[key]
+    if action in {GLFW_PRESS, GLFW_REPEAT}:
+      onKeyPress(iwKey)
+    elif action == GLFW_RELEASE:
+      onKeyRelease(iwKey)
 
 proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   discard
