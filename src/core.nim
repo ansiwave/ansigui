@@ -75,7 +75,7 @@ proc tick*(game: Game): bool =
     windowWidth = int(game.worldWidth.float / (fontHeight / 2))
     windowHeight = int(game.worldHeight.float / fontHeight)
     key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
-  let tb = bbs.render(session, windowWidth, windowHeight, key, result)
+  let tb = bbs.render(session, clnt, windowWidth, windowHeight, key, result)
 
   result = result and keyQueue.len == 0
 
