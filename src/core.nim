@@ -14,9 +14,6 @@ import unicode
 from wavecorepkg/client import nil
 from os import joinPath
 
-var c = client.initClient(constants.address)
-client.start(c)
-
 type
   Game* = object of RootGame
     deltaTime*: float
@@ -49,7 +46,10 @@ proc onMouseMove*(xpos: float, ypos: float) =
 proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, worldHeight: int) =
   discard
 
-var session = bbs.initSession(c)
+var clnt: client.Client
+clnt = client.initClient(constants.address)
+client.start(clnt)
+var session = bbs.initSession(clnt)
 
 proc init*(game: var Game) =
   doAssert glInit()
