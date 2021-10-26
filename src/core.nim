@@ -72,14 +72,16 @@ proc tick*(game: Game): bool =
 
   let
     fontHeight = text.monoFont.height * fontMultiplier
-    windowWidth = int(game.worldWidth.float / (fontHeight / 2))
+    fontWidth = fontHeight / 2
+    windowWidth = int(game.worldWidth.float / fontWidth)
     windowHeight = int(game.worldHeight.float / fontHeight)
     key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
-  let tb = bbs.render(session, clnt, windowWidth, windowHeight, key, result)
+  var finishedLoading = false
+  let tb = bbs.render(session, clnt, windowWidth, windowHeight, key, finishedLoading)
 
-  result = result and keyQueue.len == 0
+  result = finishedLoading and keyQueue.len == 0
 
-  if result:
+  if finishedLoading:
     var e = gl.copy(textEntity)
     text.updateUniforms(e, 0, 0, false)
     for y in 0 ..< windowHeight:

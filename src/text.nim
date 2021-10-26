@@ -26,6 +26,30 @@ let
                        bitmapWidth = 2048, bitmapHeight = 2048, charCount = constants.x3270CharCount)
   monoFontWidth* = monoFont.chars[0].xadvance
 
+proc fgColorToVec4(color: iw.ForegroundColor, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLFloat] =
+  case color:
+  of iw.fgNone: defaultColor
+  of iw.fgBlack: constants.blackColor
+  of iw.fgRed: constants.redColor
+  of iw.fgGreen: constants.greenColor
+  of iw.fgYellow: constants.yellowColor
+  of iw.fgBlue: constants.blueColor
+  of iw.fgMagenta: constants.magentaColor
+  of iw.fgCyan: constants.cyanColor
+  of iw.fgWhite: constants.whiteColor
+
+proc bgColorToVec4(color: iw.BackgroundColor, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLfloat] =
+  case color:
+  of iw.bgNone: defaultColor
+  of iw.bgBlack: constants.blackColor
+  of iw.bgRed: constants.redColor
+  of iw.bgGreen: constants.greenColor
+  of iw.bgYellow: constants.yellowColor
+  of iw.bgBlue: constants.blueColor
+  of iw.bgMagenta: constants.magentaColor
+  of iw.bgCyan: constants.cyanColor
+  of iw.bgWhite: constants.whiteColor
+
 type
   AnsiwaveTextEntityUniforms = tuple[
     u_matrix: Uniform[Mat3x3[GLfloat]],
@@ -42,7 +66,7 @@ type
     a_translate_matrix: Attribute[GLfloat],
     a_scale_matrix: Attribute[GLfloat],
     a_texture_matrix: Attribute[GLfloat],
-    a_color: Attribute[GLfloat]
+    a_color: Attribute[GLfloat],
   ]
   AnsiwaveTextEntity* = object of InstancedEntity[AnsiwaveTextEntityUniforms, AnsiwaveTextEntityAttributes]
   UncompiledAnsiwaveTextEntity = object of UncompiledEntity[AnsiwaveTextEntity, AnsiwaveTextEntityUniforms, AnsiwaveTextEntityAttributes]
@@ -185,7 +209,9 @@ proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int, endLine
 proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int) =
   cropLines(instancedEntity, startLine, instancedEntity.uniforms.u_char_counts.data.len)
 
-const notFoundCharIndex = constants.codepointToGlyph[9633]
+const
+  notFoundCharIndex = constants.codepointToGlyph[9633]
+  blockCharIndex = constants.codepointToGlyph["█".toRunes[0].int32]
 
 proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[iw.TerminalChar], startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
@@ -199,21 +225,17 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
           font.chars[constants.codepointToGlyph[ch.int32]]
         else: # if char isn't found, use a default one
           font.chars[notFoundCharIndex]
-      color =
-        case tchar.fg:
-        of iw.fgNone: fontColor
-        of iw.fgBlack: constants.blackColor
-        of iw.fgRed: constants.redColor
-        of iw.fgGreen: constants.greenColor
-        of iw.fgYellow: constants.yellowColor
-        of iw.fgBlue: constants.blueColor
-        of iw.fgMagenta: constants.magentaColor
-        of iw.fgCyan: constants.cyanColor
-        of iw.fgWhite: constants.whiteColor
-    var e = entity
-    e.crop(bakedChar, result, font.baseline)
-    e.color(color)
-    instancedEntity.add(e)
+      color = fgColorToVec4(tchar.fg, fontColor)
+    if tchar.bg != iw.bgNone:
+      var bg = entity
+      bg.crop(font.chars[blockCharIndex], result, font.baseline)
+      bg.color(bgColorToVec4(tchar.bg, fontColor))
+      instancedEntity.add(bg)
+      instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
+    var fg = entity
+    fg.crop(bakedChar, result, font.baseline)
+    fg.color(color)
+    instancedEntity.add(fg)
     instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     result += bakedChar.xadvance
 

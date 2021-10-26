@@ -32,50 +32,6 @@ void main()
   {
     o_color = input_color;
   }
-  // the size of one pixel
-  vec2 one_pixel = vec2(1) / vec2(textureSize(u_image, 0));
-  // left
-  vec4 left_color = texture(u_image, v_tex_coord + vec2(one_pixel.x, 0.0));
-  if (left_color.rgb == vec3(0.0, 0.0, 0.0))
-  {
-    left_color = vec4(0.0, 0.0, 0.0, 0.0);
-  }
-  else
-  {
-    left_color = input_color;
-  }
-  // right
-  vec4 right_color = texture(u_image, v_tex_coord + vec2(0.0 - one_pixel.x, 0.0));
-  if (right_color.rgb == vec3(0.0, 0.0, 0.0))
-  {
-    right_color = vec4(0.0, 0.0, 0.0, 0.0);
-  }
-  else
-  {
-    right_color = input_color;
-  }
-  // top
-  vec4 top_color = texture(u_image, v_tex_coord + vec2(0.0, one_pixel.y));
-  if (top_color.rgb == vec3(0.0, 0.0, 0.0))
-  {
-    top_color = vec4(0.0, 0.0, 0.0, 0.0);
-  }
-  else
-  {
-    top_color = input_color;
-  }
-  // bottom
-  vec4 bottom_color = texture(u_image, v_tex_coord + vec2(0.0, 0.0 - one_pixel.y));
-  if (bottom_color.rgb == vec3(0.0, 0.0, 0.0))
-  {
-    bottom_color = vec4(0.0, 0.0, 0.0, 0.0);
-  }
-  else
-  {
-    bottom_color = input_color;
-  }
-  // average
-  o_color = (o_color + left_color + right_color + top_color + bottom_color) / 5.0;
   // discard transparent pixels
   if (o_color.w == 0.0)
   {
