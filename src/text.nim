@@ -7,6 +7,7 @@ import tables
 from strutils import format
 import unicode
 from ./constants import nil
+from ansiwavepkg/illwill as iw import `[]`, `[]=`
 
 const version =
   when defined(emscripten):
@@ -186,25 +187,37 @@ proc cropLines*(instancedEntity: var AnsiwaveTextEntity, startLine: int) =
 
 const notFoundCharIndex = constants.codepointToGlyph[9633]
 
-proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[Rune], startPos: float): float =
+proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[iw.TerminalChar], startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
   result = startPos
   var i = 0
-  for ch in text:
+  for tchar in text:
     let
+      ch = tchar.ch
       bakedChar =
         if constants.codepointToGlyph.hasKey(ch.int32):
           font.chars[constants.codepointToGlyph[ch.int32]]
         else: # if char isn't found, use a default one
           font.chars[notFoundCharIndex]
+      color =
+        case tchar.fg:
+        of iw.fgNone: fontColor
+        of iw.fgBlack: constants.blackColor
+        of iw.fgRed: constants.redColor
+        of iw.fgGreen: constants.greenColor
+        of iw.fgYellow: constants.yellowColor
+        of iw.fgBlue: constants.blueColor
+        of iw.fgMagenta: constants.magentaColor
+        of iw.fgCyan: constants.cyanColor
+        of iw.fgWhite: constants.whiteColor
     var e = entity
     e.crop(bakedChar, result, font.baseline)
-    e.color(fontColor)
+    e.color(color)
     instancedEntity.add(e)
     instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     result += bakedChar.xadvance
 
-proc addLine*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[Rune]): float =
+proc addLine*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[iw.TerminalChar]): float =
   instancedEntity.uniforms.u_char_counts.data.add(0)
   instancedEntity.uniforms.u_char_counts.disable = false
   add(instancedEntity, entity, font, fontColor, text, 0f)

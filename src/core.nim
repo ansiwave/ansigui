@@ -83,9 +83,9 @@ proc tick*(game: Game): bool =
     var e = gl.copy(textEntity)
     text.updateUniforms(e, 0, 0, false)
     for y in 0 ..< windowHeight:
-      var line: seq[Rune]
+      var line: seq[iw.TerminalChar]
       for x in 0 ..< windowWidth:
-        line.add(tb[x, y].ch)
+        line.add(tb[x, y])
       discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
     e.project(float(game.worldWidth), float(game.worldHeight))
     e.translate(0f, 0f)

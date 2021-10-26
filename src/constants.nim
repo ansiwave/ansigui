@@ -1,4 +1,3 @@
-import nimgl/opengl
 from glm import nil
 import tables
 
@@ -6,16 +5,16 @@ const
   port* = 3000
   address* = "http://localhost:" & $port
   dbFilename* = "board.db"
-  bgColor* = glm.vec4(Glfloat(0/255), GLfloat(16/255), GLfloat(64/255), GLfloat(0.95))
-  textColor* = glm.vec4(1f, 1f, 1f, GLFloat(0.6))
-  blackColor* = glm.vec4(Glfloat(0), GLfloat(0), GLfloat(0), GLfloat(1.0))
-  yellowColor* = glm.vec4(Glfloat(255/255), GLfloat(193/255), GLfloat(94/255), GLfloat(1.0))
-  tanColor* = glm.vec4(Glfloat(209/255), GLfloat(153/255), GLfloat(101/255), GLfloat(1.0))
-  cyanColor* = glm.vec4(Glfloat(86/255), GLfloat(181/255), GLfloat(194/255), GLfloat(1.0))
-  grayColor* = glm.vec4(Glfloat(150/255), GLfloat(129/255), GLfloat(133/255), GLfloat(1.0))
-  orangeColor* = glm.vec4(Glfloat(220/255), GLfloat(103/255), GLfloat(44/255), GLfloat(1.0))
-  redColor* = glm.vec4(Glfloat(210/255), GLfloat(45/255), GLfloat(58/255), GLfloat(1.0))
-  greenColor* = glm.vec4(Glfloat(65/255), GLfloat(174/255), GLfloat(122/255), GLfloat(1.0))
+  bgColor* = glm.vec4(0f/255f, 16f/255f, 64f/255f, 0.95f)
+  textColor* = glm.vec4(1f, 1f, 1f, 0.6f)
+  blackColor* = glm.vec4(0f, 0f, 0f, 1f)
+  redColor* = glm.vec4(1f, 0f, 0f, 1f)
+  greenColor* = glm.vec4(0f, 128f/255f, 0f, 1f)
+  yellowColor* = glm.vec4(1f, 1f, 0f, 1f)
+  blueColor* = glm.vec4(0f, 0f, 1f, 1f)
+  magentaColor* = glm.vec4(1f, 0f, 1f, 1f)
+  cyanColor* = glm.vec4(0f, 1f, 1f, 1f)
+  whiteColor* = glm.vec4(1f, 1f, 1f, 1f)
   x3270Ranges* = [
     (32'i32, 331'i32),
     (333'i32, 340'i32),
