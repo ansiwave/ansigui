@@ -213,6 +213,8 @@ const
   notFoundCharIndex = constants.codepointToGlyph[9633]
   blockCharIndex = constants.codepointToGlyph["█".toRunes[0].int32]
 
+let blockWidth* = monoFont.chars[blockCharIndex].xadvance
+
 proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity, font: PackedFont, fontColor: glm.Vec4[GLfloat], text: seq[iw.TerminalChar], startPos: float): float =
   let lineNum = instancedEntity.uniforms.u_char_counts.data.len - 1
   result = startPos

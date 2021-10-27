@@ -45,7 +45,7 @@ proc onMouseClick*(button: iw.MouseButton) =
 proc onMouseMove*(xpos: float, ypos: float) =
   let
     fontHeight = text.monoFont.height * fontMultiplier
-    fontWidth = fontHeight / 2
+    fontWidth = text.blockWidth * fontMultiplier
   iw.gMouseInfo.x = int(xpos / fontWidth)
   iw.gMouseInfo.y = int(ypos / fontHeight)
 
@@ -78,7 +78,7 @@ proc tick*(game: Game): bool =
 
   let
     fontHeight = text.monoFont.height * fontMultiplier
-    fontWidth = fontHeight / 2
+    fontWidth = text.blockWidth * fontMultiplier
     windowWidth = int(game.worldWidth.float / fontWidth)
     windowHeight = int(game.worldHeight.float / fontHeight)
     key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
