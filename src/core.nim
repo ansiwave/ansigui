@@ -37,11 +37,17 @@ proc onKeyPress*(key: iw.Key) =
 proc onKeyRelease*(key: iw.Key) =
   discard
 
-proc onMouseClick*(button: int) =
-  discard
+proc onMouseClick*(button: iw.MouseButton) =
+  keyQueue.addLast(iw.Key.Mouse)
+  iw.gMouseInfo.button = button
+  iw.gMouseInfo.action = iw.MouseButtonAction.mbaPressed
 
 proc onMouseMove*(xpos: float, ypos: float) =
-  discard
+  let
+    fontHeight = text.monoFont.height * fontMultiplier
+    fontWidth = fontHeight / 2
+  iw.gMouseInfo.x = int(xpos / fontWidth)
+  iw.gMouseInfo.y = int(ypos / fontHeight)
 
 proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, worldHeight: int) =
   discard

@@ -3,20 +3,26 @@ import core
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import tables
 
-const glfwToIllwill =
-  {GLFWKey.BACKSPACE: iw.Key.Backspace,
-   GLFWKey.DELETE: iw.Key.Delete,
-   GLFWKey.TAB: iw.Key.Tab,
-   GLFWKey.ENTER: iw.Key.Enter,
-   GLFWKey.ESCAPE: iw.Key.Escape,
-   GLFWKey.UP: iw.Key.Up,
-   GLFWKey.DOWN: iw.Key.Down,
-   GLFWKey.LEFT: iw.Key.Left,
-   GLFWKey.RIGHT: iw.Key.Right,
-   GLFWKey.HOME: iw.Key.Home,
-   GLFWKey.END: iw.Key.End,
-   GLFWKey.PAGE_UP: iw.Key.PageUp,
-   GLFWKey.PAGE_DOWN: iw.Key.PageDown}.toTable
+const
+  glfwToIllwillKey =
+    {GLFWKey.BACKSPACE: iw.Key.Backspace,
+     GLFWKey.DELETE: iw.Key.Delete,
+     GLFWKey.TAB: iw.Key.Tab,
+     GLFWKey.ENTER: iw.Key.Enter,
+     GLFWKey.ESCAPE: iw.Key.Escape,
+     GLFWKey.UP: iw.Key.Up,
+     GLFWKey.DOWN: iw.Key.Down,
+     GLFWKey.LEFT: iw.Key.Left,
+     GLFWKey.RIGHT: iw.Key.Right,
+     GLFWKey.HOME: iw.Key.Home,
+     GLFWKey.END: iw.Key.End,
+     GLFWKey.PAGE_UP: iw.Key.PageUp,
+     GLFWKey.PAGE_DOWN: iw.Key.PageDown
+     }.toTable
+  glfwToIllwillMouse =
+    {GLFWMouseButton.Button1: iw.MouseButton.mbLeft,
+     GLFWMouseButton.Button2: iw.MouseButton.mbRight,
+     }.toTable
 
 var
   game: Game
@@ -24,8 +30,8 @@ var
   density: int
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
-  if glfwToIllwill.hasKey(key):
-    let iwKey = glfwToIllwill[key]
+  if glfwToIllwillKey.hasKey(key):
+    let iwKey = glfwToIllwillKey[key]
     if action in {GLFW_PRESS, GLFW_REPEAT}:
       onKeyPress(iwKey)
     elif action == GLFW_RELEASE:
@@ -35,8 +41,8 @@ proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   discard
 
 proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
-  if action == GLFWPress:
-    onMouseClick(button)
+  if action == GLFWPress and glfwToIllwillMouse.hasKey(button):
+    onMouseClick(glfwToIllwillMouse[button])
 
 proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
   onMouseMove(xpos, ypos)
