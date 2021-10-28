@@ -30,6 +30,7 @@ var
   textEntity: text.AnsiwaveTextEntity
   fontMultiplier = 1/4
   keyQueue: Deque[iw.Key]
+  pageHeight*: int32 = 0
 
 proc onKeyPress*(key: iw.Key) =
   keyQueue.addLast(key)
@@ -84,6 +85,7 @@ proc tick*(game: Game): bool =
     key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
   var finishedLoading = false
   let tb = bbs.render(session, clnt, windowWidth, windowHeight, key, finishedLoading)
+  pageHeight = int32(bbs.viewHeight(session).float * fontHeight)
 
   result = finishedLoading and keyQueue.len == 0
 
