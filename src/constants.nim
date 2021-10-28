@@ -3,7 +3,11 @@ import tables
 
 const
   port* = 3000
-  address* = "http://localhost:" & $port
+  address* =
+    when defined(emscripten):
+      ""
+    else:
+      "http://localhost:" & $port
   dbFilename* = "board.db"
   bgColor* = glm.vec4(0f/255f, 16f/255f, 64f/255f, 0.95f)
   textColor* = glm.vec4(230f/255f, 235f/255f, 1f, 1f)
