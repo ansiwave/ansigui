@@ -88,12 +88,21 @@ proc tick*(game: Game): bool =
     fontWidth = text.blockWidth * fontMultiplier
     windowWidth = int(game.worldWidth.float / fontWidth)
     windowHeight = int(game.worldHeight.float / fontHeight)
-    key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
-    ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
+
+  var
+    tb: iw.TerminalBuffer
+    rendered = false
+  while keyQueue.len > 0 or charQueue.len > 0:
+    let
+      key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
+      ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
     tb = bbs.render(session, clnt, windowWidth, windowHeight, (key, ch), finishedLoading)
+    rendered = true
+  if not rendered:
+    tb = bbs.render(session, clnt, windowWidth, windowHeight, (iw.Key.None, 0'u32), finishedLoading)
   pageHeight = int32(bbs.viewHeight(session).float * fontHeight)
 
-  result = finishedLoading and keyQueue.len == 0 and charQueue.len == 0
+  result = finishedLoading
 
   if finishedLoading:
     var e = gl.copy(textEntity)
