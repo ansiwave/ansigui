@@ -38,7 +38,7 @@ proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32,
       onKeyRelease(iwKey)
 
 proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
-  discard
+  onChar(codepoint)
 
 proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
   if action == GLFWPress and glfwToIllwillMouse.hasKey(button):

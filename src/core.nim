@@ -30,6 +30,7 @@ var
   textEntity: text.AnsiwaveTextEntity
   fontMultiplier = 1/4
   keyQueue: Deque[iw.Key]
+  charQueue: Deque[uint32]
   pageHeight*: int32 = 0
 
 proc onKeyPress*(key: iw.Key) =
@@ -37,6 +38,9 @@ proc onKeyPress*(key: iw.Key) =
 
 proc onKeyRelease*(key: iw.Key) =
   discard
+
+proc onChar*(codepoint: uint32) =
+  charQueue.addLast(codepoint)
 
 proc onMouseClick*(button: iw.MouseButton) =
   keyQueue.addLast(iw.Key.Mouse)
@@ -78,17 +82,18 @@ proc tick*(game: Game): bool =
   glClear(GL_COLOR_BUFFER_BIT)
   glViewport(0, 0, GLsizei(game.windowWidth), GLsizei(game.windowHeight))
 
+  var finishedLoading = false
   let
     fontHeight = text.monoFont.height * fontMultiplier
     fontWidth = text.blockWidth * fontMultiplier
     windowWidth = int(game.worldWidth.float / fontWidth)
     windowHeight = int(game.worldHeight.float / fontHeight)
     key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
-  var finishedLoading = false
-  let tb = bbs.render(session, clnt, windowWidth, windowHeight, key, finishedLoading)
+    ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
+    tb = bbs.render(session, clnt, windowWidth, windowHeight, (key, ch), finishedLoading)
   pageHeight = int32(bbs.viewHeight(session).float * fontHeight)
 
-  result = finishedLoading and keyQueue.len == 0
+  result = finishedLoading and keyQueue.len == 0 and charQueue.len == 0
 
   if finishedLoading:
     var e = gl.copy(textEntity)
