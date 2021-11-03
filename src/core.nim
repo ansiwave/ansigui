@@ -56,7 +56,7 @@ proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, world
 var clnt: client.Client
 clnt = client.initClient(constants.address)
 client.start(clnt)
-var session = bbs.initSession(clnt)
+var session: bbs.BbsSession
 
 proc init*(game: var Game) =
   doAssert glInit()
@@ -71,6 +71,7 @@ proc init*(game: var Game) =
 
   #const img = staticRead("aintgottaexplainshit.jpg")
   #echo chafa.imageToAnsi(img, 80)
+  session = bbs.initSession(clnt)
 
 proc tick*(game: Game): bool =
   glClearColor(constants.bgColor.arr[0], constants.bgColor.arr[1], constants.bgColor.arr[2], constants.bgColor.arr[3])
