@@ -67,7 +67,20 @@ var
   session: bbs.BbsSession
   accessibleText = ""
 
+proc insertAccessibleText(finishedLoading: bool) =
+  when defined(emscripten):
+    var text: string
+    if finishedLoading:
+      text = bbs.renderHtml(session)
+    if text != accessibleText:
+      emscripten.setInnerHtml("#accessible-text", text)
+      accessibleText = text
+
 proc init*(game: var Game) =
+  # this must be first!
+  # that way, it will initialize even if the gl stuff below fails
+  session = bbs.initSession(clnt)
+
   doAssert glInit()
 
   glEnable(GL_BLEND)
@@ -80,7 +93,6 @@ proc init*(game: var Game) =
 
   #const img = staticRead("aintgottaexplainshit.jpg")
   #echo chafa.imageToAnsi(img, 80)
-  session = bbs.initSession(clnt)
 
 proc tick*(game: Game): bool =
   glClearColor(constants.bgColor.arr[0], constants.bgColor.arr[1], constants.bgColor.arr[2], constants.bgColor.arr[3])
@@ -129,13 +141,8 @@ proc tick*(game: Game): bool =
     e.scale(fontMultiplier, fontMultiplier)
     render(game, e)
 
-  when defined(emscripten):
-    var text: string
-    if finishedLoading:
-      for y in 0 ..< termHeight:
-        for x in 0 ..< termWidth:
-          text &= $tb[x, y].ch
-        text &= "\n"
-    if text != accessibleText:
-      emscripten.setInnerHtml("#accessible-text", text)
-      accessibleText = text
+  insertAccessibleText(finishedLoading)
+
+proc tickHeadless*(game: Game) =
+  insertAccessibleText(true)
+

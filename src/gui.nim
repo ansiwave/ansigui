@@ -67,6 +67,7 @@ when defined(emscripten):
   proc emscripten_set_main_loop(f: proc() {.cdecl.}, a: cint, b: bool) {.importc.}
   proc emscripten_get_canvas_element_size(target: cstring, width: ptr cint, height: ptr cint): cint {.importc.}
   proc emscripten_set_canvas_element_size(target: cstring, width: cint, height: cint) {.importc.}
+  from wavecorepkg/client/emscripten import nil
 
 proc mainLoop() {.cdecl.} =
   let ts = glfwGetTime()
@@ -92,6 +93,9 @@ proc mainLoop() {.cdecl.} =
     glfwWaitEvents()
   else:
     glfwPollEvents()
+
+proc mainLoopHeadless() {.cdecl.} =
+  game.tickHeadless()
 
 proc main*() =
   doAssert glfwInit()
@@ -126,14 +130,26 @@ proc main*() =
   density = max(1, int(width / windowWidth))
   window.frameSizeCallback(width, height)
 
-  game.init()
-  game.totalTime = glfwGetTime()
+  proc run() =
+    game.init()
+    game.totalTime = glfwGetTime()
+
+    when defined(emscripten):
+      emscripten_set_main_loop(mainLoop, 0, true)
+    else:
+      while not window.windowShouldClose:
+        mainLoop()
 
   when defined(emscripten):
-    emscripten_set_main_loop(mainLoop, 0, true)
+    try:
+      run()
+    except Exception as ex:
+      echo ex.msg
+      emscripten.setDisplay("#canvas", "none")
+      emscripten_set_main_loop(mainLoopHeadless, 0, true)
   else:
-    while not window.windowShouldClose:
-      mainLoop()
+    run()
 
   window.destroyWindow()
   glfwTerminate()
+
