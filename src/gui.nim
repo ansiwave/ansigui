@@ -30,6 +30,8 @@ var
   density: int
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
+  if key < 0:
+    return
   if glfwToIllwillKey.hasKey(key):
     let iwKey = glfwToIllwillKey[key]
     if action in {GLFW_PRESS, GLFW_REPEAT}:
