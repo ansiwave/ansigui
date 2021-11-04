@@ -124,18 +124,18 @@ proc tick*(game: Game): bool =
       for x in 0 ..< termWidth:
         line.add(tb[x, y])
       discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
-    e.project(float(windowWidth), float(windowHeight))
+    e.project(viewWidth, viewHeight)
     e.translate(0f, 0f)
     e.scale(fontMultiplier, fontMultiplier)
     render(game, e)
 
   when defined(emscripten):
+    var text: string
     if finishedLoading:
-      var text: string
       for y in 0 ..< termHeight:
         for x in 0 ..< termWidth:
           text &= $tb[x, y].ch
         text &= "\n"
-      if text != accessibleText:
-        emscripten.setInnerHtml("#accessible-text", text)
-        accessibleText = text
+    if text != accessibleText:
+      emscripten.setInnerHtml("#accessible-text", text)
+      accessibleText = text
