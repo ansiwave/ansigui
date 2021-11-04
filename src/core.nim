@@ -34,8 +34,7 @@ var
   fontMultiplier = 1/4
   keyQueue: Deque[iw.Key]
   charQueue: Deque[uint32]
-  windowWidth*: float
-  windowHeight*: float
+  viewHeight*: float
 
 proc onKeyPress*(key: iw.Key) =
   keyQueue.addLast(key)
@@ -112,8 +111,8 @@ proc tick*(game: Game): bool =
   termWidth = iw.width(tb)
   termHeight = iw.height(tb)
 
-  windowWidth = termWidth.float * fontWidth
-  windowHeight = termHeight.float * fontHeight
+  let viewWidth = termWidth.float * fontWidth
+  viewHeight = termHeight.float * fontHeight
 
   result = finishedLoading
 

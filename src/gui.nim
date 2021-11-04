@@ -54,15 +54,10 @@ proc mousePositionCallback(window: GLFWWindow, xpos: float64, ypos: float64): vo
   game.mouseY = ypos
 
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
-  let h =
-    when defined(emscripten):
-      core.windowHeight.int32
-    else:
-      height
   game.windowWidth = width
-  game.windowHeight = h
+  game.windowHeight = height
   game.worldWidth = int32(width / density)
-  game.worldHeight = int32(h / density)
+  game.worldHeight = int32(height / density)
   onWindowResize(game.windowWidth, game.windowHeight, game.worldWidth, game.worldHeight)
 
 proc scrollCallback(window: GLFWWindow, xoffset: float64, yoffset: float64) {.cdecl.} =
@@ -84,7 +79,8 @@ proc mainLoop() {.cdecl.} =
         var width, height: cint
         if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
           window.frameSizeCallback(width, height)
-          emscripten_set_canvas_element_size("#canvas", game.windowWidth, game.windowHeight)
+          if height != core.viewHeight.int32:
+            emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.viewHeight.int32)
         ret
       except Exception as ex:
         echo ex.msg
