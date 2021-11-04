@@ -126,22 +126,21 @@ proc tick*(game: Game): bool =
   let viewWidth = termWidth.float * fontWidth
   viewHeight = termHeight.float * fontHeight
 
-  result = finishedLoading
-
-  if finishedLoading:
-    var e = gl.copy(textEntity)
-    text.updateUniforms(e, 0, 0, false)
-    for y in 0 ..< termHeight:
-      var line: seq[iw.TerminalChar]
-      for x in 0 ..< termWidth:
-        line.add(tb[x, y])
-      discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
-    e.project(viewWidth, viewHeight)
-    e.translate(0f, 0f)
-    e.scale(fontMultiplier, fontMultiplier)
-    render(game, e)
+  var e = gl.copy(textEntity)
+  text.updateUniforms(e, 0, 0, false)
+  for y in 0 ..< termHeight:
+    var line: seq[iw.TerminalChar]
+    for x in 0 ..< termWidth:
+      line.add(tb[x, y])
+    discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
+  e.project(viewWidth, viewHeight)
+  e.translate(0f, 0f)
+  e.scale(fontMultiplier, fontMultiplier)
+  render(game, e)
 
   insertAccessibleText(finishedLoading)
+
+  return finishedLoading
 
 proc tickHeadless*(game: Game) =
   insertAccessibleText(true)
