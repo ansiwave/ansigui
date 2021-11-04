@@ -80,7 +80,7 @@ proc mainLoop() {.cdecl.} =
         var width, height: cint
         if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
           window.frameSizeCallback(width, height)
-          if height != core.viewHeight.int32:
+          if width != game.windowWidth or height != core.viewHeight.int32:
             emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.viewHeight.int32)
         ret
       except Exception as ex:
