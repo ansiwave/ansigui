@@ -11,6 +11,12 @@
         background-color: rgba(0, 16, 64, 1.0);
       }
 
+      #accessible-text {
+        position: absolute;
+        z-index: -1;
+        color: lightgray;
+      }
+
       canvas {
         margin: 0px;
         border: 0;
@@ -20,6 +26,7 @@
     </style>
   </head>
   <body>
+    <pre id="accessible-text"></pre>
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 

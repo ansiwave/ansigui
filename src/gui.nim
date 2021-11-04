@@ -56,7 +56,7 @@ proc mousePositionCallback(window: GLFWWindow, xpos: float64, ypos: float64): vo
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
   let h =
     when defined(emscripten):
-      core.pageHeight
+      core.windowHeight.int32
     else:
       height
   game.windowWidth = width
@@ -79,12 +79,13 @@ proc mainLoop() {.cdecl.} =
   game.totalTime = ts
   let canSleep =
     when defined(emscripten):
-      var width, height: cint
-      if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
-        window.frameSizeCallback(width, height)
-        emscripten_set_canvas_element_size("#canvas", game.windowWidth, game.windowHeight)
       try:
-        game.tick()
+        let ret = game.tick()
+        var width, height: cint
+        if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
+          window.frameSizeCallback(width, height)
+          emscripten_set_canvas_element_size("#canvas", game.windowWidth, game.windowHeight)
+        ret
       except Exception as ex:
         echo ex.msg
         false

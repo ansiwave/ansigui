@@ -14,6 +14,9 @@ import unicode
 from wavecorepkg/client import nil
 from os import joinPath
 
+when defined(emscripten):
+  from wavecorepkg/client/emscripten import nil
+
 type
   Game* = object of RootGame
     deltaTime*: float
@@ -31,7 +34,8 @@ var
   fontMultiplier = 1/4
   keyQueue: Deque[iw.Key]
   charQueue: Deque[uint32]
-  pageHeight*: int32 = 0
+  windowWidth*: float
+  windowHeight*: float
 
 proc onKeyPress*(key: iw.Key) =
   keyQueue.addLast(key)
@@ -60,7 +64,9 @@ proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, world
 var clnt: client.Client
 clnt = client.initClient(constants.address)
 client.start(clnt)
-var session: bbs.BbsSession
+var
+  session: bbs.BbsSession
+  accessibleText = ""
 
 proc init*(game: var Game) =
   doAssert glInit()
@@ -86,8 +92,10 @@ proc tick*(game: Game): bool =
   let
     fontHeight = text.monoFont.height * fontMultiplier
     fontWidth = text.blockWidth * fontMultiplier
-    windowWidth = int(game.worldWidth.float / fontWidth)
-    windowHeight = int(game.worldHeight.float / fontHeight)
+
+  var
+    termWidth = int(game.worldWidth.float / fontWidth)
+    termHeight = int(game.worldHeight.float / fontHeight)
 
   var
     tb: iw.TerminalBuffer
@@ -96,24 +104,39 @@ proc tick*(game: Game): bool =
     let
       key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
       ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
-    tb = bbs.render(session, clnt, windowWidth, windowHeight, (key, ch), finishedLoading)
+    tb = bbs.render(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
     rendered = true
   if not rendered:
-    tb = bbs.render(session, clnt, windowWidth, windowHeight, (iw.Key.None, 0'u32), finishedLoading)
-  pageHeight = int32(bbs.viewHeight(session).float * fontHeight)
+    tb = bbs.render(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)
+
+  termWidth = iw.width(tb)
+  termHeight = iw.height(tb)
+
+  windowWidth = termWidth.float * fontWidth
+  windowHeight = termHeight.float * fontHeight
 
   result = finishedLoading
 
   if finishedLoading:
     var e = gl.copy(textEntity)
     text.updateUniforms(e, 0, 0, false)
-    for y in 0 ..< windowHeight:
+    for y in 0 ..< termHeight:
       var line: seq[iw.TerminalChar]
-      for x in 0 ..< windowWidth:
+      for x in 0 ..< termWidth:
         line.add(tb[x, y])
       discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
-    e.project(float(game.worldWidth), float(game.worldHeight))
+    e.project(float(windowWidth), float(windowHeight))
     e.translate(0f, 0f)
     e.scale(fontMultiplier, fontMultiplier)
     render(game, e)
 
+  when defined(emscripten):
+    if finishedLoading:
+      var text: string
+      for y in 0 ..< termHeight:
+        for x in 0 ..< termWidth:
+          text &= $tb[x, y].ch
+        text &= "\n"
+      if text != accessibleText:
+        emscripten.setInnerHtml("#accessible-text", text)
+        accessibleText = text
