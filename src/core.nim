@@ -64,7 +64,7 @@ var clnt: client.Client
 clnt = client.initClient(constants.address)
 client.start(clnt)
 var
-  session: bbs.BbsSession
+  session*: bbs.BbsSession
   accessibleText = ""
 
 proc insertAccessibleText(finishedLoading: bool) =
