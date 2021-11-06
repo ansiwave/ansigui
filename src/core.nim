@@ -6,7 +6,6 @@ from paratext/gl/text as ptext import nil
 from ./constants import nil
 import deques
 
-#from ansiwavepkg/chafa import nil
 from ansiwavepkg/bbs import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import unicode
@@ -90,9 +89,6 @@ proc init*(game: var Game) =
 
   baseEntity = ptext.initTextEntity(text.monoFont)
   textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
-
-  #const img = staticRead("aintgottaexplainshit.jpg")
-  #echo chafa.imageToAnsi(img, 80)
 
 proc tick*(game: Game): bool =
   glClearColor(constants.bgColor.arr[0], constants.bgColor.arr[1], constants.bgColor.arr[2], constants.bgColor.arr[3])
