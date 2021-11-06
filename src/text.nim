@@ -26,29 +26,37 @@ let
                        bitmapWidth = 2048, bitmapHeight = 2048, charCount = constants.x3270CharCount)
   monoFontWidth* = monoFont.chars[0].xadvance
 
-proc fgColorToVec4(color: iw.ForegroundColor, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLFloat] =
-  case color:
-  of iw.fgNone: defaultColor
-  of iw.fgBlack: constants.blackColor
-  of iw.fgRed: constants.redColor
-  of iw.fgGreen: constants.greenColor
-  of iw.fgYellow: constants.yellowColor
-  of iw.fgBlue: constants.blueColor
-  of iw.fgMagenta: constants.magentaColor
-  of iw.fgCyan: constants.cyanColor
-  of iw.fgWhite: constants.whiteColor
+proc fgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLFloat] =
+  if ch.fgTruecolor != (0, 0, 0):
+    let (r, g, b) = ch.fgTruecolor
+    glm.vec4(r.GLFloat/255f, g.GLFloat/255f, b.GLFloat/255f, 1.GLfloat)
+  else:
+    case ch.fg:
+    of iw.fgNone: defaultColor
+    of iw.fgBlack: constants.blackColor
+    of iw.fgRed: constants.redColor
+    of iw.fgGreen: constants.greenColor
+    of iw.fgYellow: constants.yellowColor
+    of iw.fgBlue: constants.blueColor
+    of iw.fgMagenta: constants.magentaColor
+    of iw.fgCyan: constants.cyanColor
+    of iw.fgWhite: constants.whiteColor
 
-proc bgColorToVec4(color: iw.BackgroundColor, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLfloat] =
-  case color:
-  of iw.bgNone: defaultColor
-  of iw.bgBlack: constants.blackColor
-  of iw.bgRed: constants.redColor
-  of iw.bgGreen: constants.greenColor
-  of iw.bgYellow: constants.yellowColor
-  of iw.bgBlue: constants.blueColor
-  of iw.bgMagenta: constants.magentaColor
-  of iw.bgCyan: constants.cyanColor
-  of iw.bgWhite: constants.whiteColor
+proc bgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLfloat] =
+  if ch.bgTruecolor != (0, 0, 0):
+    let (r, g, b) = ch.bgTruecolor
+    glm.vec4(r.GLFloat/255f, g.GLFloat/255f, b.GLFloat/255f, 1.GLfloat)
+  else:
+    case ch.bg:
+    of iw.bgNone: defaultColor
+    of iw.bgBlack: constants.blackColor
+    of iw.bgRed: constants.redColor
+    of iw.bgGreen: constants.greenColor
+    of iw.bgYellow: constants.yellowColor
+    of iw.bgBlue: constants.blueColor
+    of iw.bgMagenta: constants.magentaColor
+    of iw.bgCyan: constants.cyanColor
+    of iw.bgWhite: constants.whiteColor
 
 type
   AnsiwaveTextEntityUniforms = tuple[
@@ -227,11 +235,11 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
           font.chars[constants.codepointToGlyph[ch.int32]]
         else: # if char isn't found, use a default one
           font.chars[notFoundCharIndex]
-      color = fgColorToVec4(tchar.fg, fontColor)
+      color = fgColorToVec4(tchar, fontColor)
     if tchar.bg != iw.bgNone:
       var bg = entity
       bg.crop(font.chars[blockCharIndex], result, font.baseline)
-      bg.color(bgColorToVec4(tchar.bg, fontColor))
+      bg.color(bgColorToVec4(tchar, fontColor))
       instancedEntity.add(bg)
       instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     var fg = entity
