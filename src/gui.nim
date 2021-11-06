@@ -28,7 +28,7 @@ const
 var
   game: Game
   window: GLFWWindow
-  pixelDensity: int
+  pixelDensity: float
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
   if key < 0:
@@ -51,11 +51,11 @@ proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl
   let
     mult =
       when defined(emscripten):
-        1
+        1f
       else:
         pixelDensity
-    mouseX = xpos * mult.float
-    mouseY = ypos * mult.float
+    mouseX = xpos * mult
+    mouseY = ypos * mult
   onMouseMove(mouseX, mouseY)
 
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
@@ -136,8 +136,8 @@ proc main*() =
     when defined(emscripten):
       emscripten.getPixelDensity()
     else:
-      max(1, int(width / windowWidth))
-  core.fontMultiplier *= pixelDensity.float
+      max(1f, width / windowWidth)
+  core.fontMultiplier *= pixelDensity
   window.frameSizeCallback(width, height)
 
   proc run() =
