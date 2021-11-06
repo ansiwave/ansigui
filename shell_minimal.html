@@ -37,7 +37,7 @@
   <body>
     <pre id="accessible-text"><noscript>Your browser doesn't support JavaScript</noscript></pre>
 
-    <canvas id="canvas" tabindex=-1></canvas>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
       var canvas = document.getElementById('canvas');
