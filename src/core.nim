@@ -30,7 +30,8 @@ type
 var
   baseEntity: ptext.UncompiledTextEntity
   textEntity: text.AnsiwaveTextEntity
-  fontMultiplier = 1/4
+  pixelDensity* = 1
+  fontMultiplier* = 1/2
   keyQueue: Deque[iw.Key]
   charQueue: Deque[uint32]
   viewHeight*: float

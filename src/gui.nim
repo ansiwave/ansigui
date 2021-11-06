@@ -28,7 +28,6 @@ const
 var
   game: Game
   window: GLFWWindow
-  density: int
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
   if key < 0:
@@ -57,8 +56,8 @@ proc mousePositionCallback(window: GLFWWindow, xpos: float64, ypos: float64): vo
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
   game.windowWidth = width
   game.windowHeight = height
-  game.worldWidth = int32(width / density)
-  game.worldHeight = int32(height / density)
+  game.worldWidth = int32(width / core.pixelDensity)
+  game.worldHeight = int32(height / core.pixelDensity)
   onWindowResize(game.windowWidth, game.windowHeight, game.worldWidth, game.worldHeight)
 
 proc scrollCallback(window: GLFWWindow, xoffset: float64, yoffset: float64) {.cdecl.} =
@@ -130,7 +129,8 @@ proc main*() =
   var windowWidth, windowHeight: int32
   window.getWindowSize(windowWidth.addr, windowHeight.addr)
 
-  density = max(1, int(width / windowWidth))
+  core.pixelDensity = max(1, int(width / windowWidth))
+  core.fontMultiplier = core.fontMultiplier / core.pixelDensity.float
   window.frameSizeCallback(width, height)
 
   proc run() =

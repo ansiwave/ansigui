@@ -42,8 +42,8 @@
     <script type='text/javascript'>
       var canvas = document.getElementById('canvas');
       window.onresize = function() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * window.devicePixelRatio;
+        canvas.height = canvas.clientHeight * window.devicePixelRatio;
       };
       window.onkeypress = function(e) {
         e.preventDefault();
