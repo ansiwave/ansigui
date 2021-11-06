@@ -30,8 +30,7 @@ type
 var
   baseEntity: ptext.UncompiledTextEntity
   textEntity: text.AnsiwaveTextEntity
-  pixelDensity* = 1
-  fontMultiplier* = 1/2
+  fontMultiplier* = 1/4
   keyQueue: Deque[iw.Key]
   charQueue: Deque[uint32]
   viewHeight*: float
@@ -57,7 +56,7 @@ proc onMouseMove*(xpos: float, ypos: float) =
   iw.gMouseInfo.x = int(xpos / fontWidth)
   iw.gMouseInfo.y = int(ypos / fontHeight)
 
-proc onWindowResize*(windowWidth: int, windowHeight: int, worldWidth: int, worldHeight: int) =
+proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
 
 var clnt: client.Client
@@ -102,8 +101,8 @@ proc tick*(game: Game): bool =
     fontWidth = text.blockWidth * fontMultiplier
 
   var
-    termWidth = int(game.worldWidth.float / fontWidth)
-    termHeight = int(game.worldHeight.float / fontHeight)
+    termWidth = int(game.windowWidth.float / fontWidth)
+    termHeight = int(game.windowHeight.float / fontHeight)
 
   var
     tb: iw.TerminalBuffer
