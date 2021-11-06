@@ -35,6 +35,12 @@ var
   charQueue: Deque[uint32]
   viewHeight*: float
 
+proc fontWidth*(): float =
+  text.blockWidth * fontMultiplier
+
+proc fontHeight*(): float =
+  text.monoFont.height * fontMultiplier
+
 proc onKeyPress*(key: iw.Key) =
   keyQueue.addLast(key)
 
@@ -50,11 +56,8 @@ proc onMouseClick*(button: iw.MouseButton) =
   iw.gMouseInfo.action = iw.MouseButtonAction.mbaPressed
 
 proc onMouseMove*(xpos: float, ypos: float) =
-  let
-    fontHeight = text.monoFont.height * fontMultiplier
-    fontWidth = text.blockWidth * fontMultiplier
-  iw.gMouseInfo.x = int(xpos / fontWidth)
-  iw.gMouseInfo.y = int(ypos / fontHeight)
+  iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
+  iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
 
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
@@ -97,8 +100,8 @@ proc tick*(game: Game): bool =
 
   var finishedLoading = false
   let
-    fontHeight = text.monoFont.height * fontMultiplier
-    fontWidth = text.blockWidth * fontMultiplier
+    fontWidth = fontWidth()
+    fontHeight = fontHeight()
 
   var
     termWidth = int(game.windowWidth.float / fontWidth)

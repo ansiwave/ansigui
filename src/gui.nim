@@ -84,7 +84,7 @@ proc mainLoop() {.cdecl.} =
         if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
           window.frameSizeCallback(width, height)
           if bbs.isEditor(core.session):
-            emscripten.setSizeMax("#canvas")
+            emscripten.setSizeMax("#canvas", 0,  - int32(core.fontHeight() / 2))
           else:
             emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.viewHeight.int32)
         ret
