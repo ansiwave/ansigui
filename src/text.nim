@@ -27,7 +27,7 @@ let
   monoFontWidth* = monoFont.chars[0].xadvance
 
 proc fgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLFloat] =
-  if ch.fgTruecolor != (0, 0, 0):
+  if ch.fgTruecolor != iw.rgbNone:
     let (r, g, b) = ch.fgTruecolor
     glm.vec4(r.GLFloat/255f, g.GLFloat/255f, b.GLFloat/255f, 1.GLfloat)
   else:
@@ -43,7 +43,7 @@ proc fgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Ve
     of iw.fgWhite: constants.whiteColor
 
 proc bgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLfloat] =
-  if ch.bgTruecolor != (0, 0, 0):
+  if ch.bgTruecolor != iw.rgbNone:
     let (r, g, b) = ch.bgTruecolor
     glm.vec4(r.GLFloat/255f, g.GLFloat/255f, b.GLFloat/255f, 1.GLfloat)
   else:
