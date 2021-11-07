@@ -27,7 +27,7 @@ when defined(emscripten):
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
   when defined(emscripten_worker):
-    switch("passL", "-o worker.js -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_recvAction']\" -s BUILD_AS_WORKER")
+    switch("passL", "-o worker.js -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_recvAction']\" -s ALLOW_MEMORY_GROWTH=1 -s BUILD_AS_WORKER")
   else:
     switch("passL", "-o index.html -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_insertImage']\" -s EXPORTED_RUNTIME_METHODS=\"['ccall']\" -s ALLOW_MEMORY_GROWTH=1 --shell-file shell_minimal.html")
 elif defined(release):
