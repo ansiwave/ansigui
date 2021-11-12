@@ -6,6 +6,7 @@ from paratext/gl/text as ptext import nil
 from ./constants import nil
 import deques
 
+from ansiwavepkg/crypto import nil
 from ansiwavepkg/bbs import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import unicode
@@ -82,6 +83,11 @@ proc init*(game: var Game) =
   # this must be first!
   # that way, it will initialize even if the gl stuff below fails
   session = bbs.initSession(clnt)
+
+  try:
+    crypto.loadKey()
+  except Exception as ex:
+    echo ex.msg
 
   doAssert glInit()
 
