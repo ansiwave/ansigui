@@ -1,13 +1,13 @@
 from glm import nil
 import tables
+from wavecorepkg/board import nil
 
 const
-  port* = 3000
   address* =
     when defined(emscripten):
       ""
     else:
-      "http://localhost:" & $port
+      board.address
   dbFilename* = "board.db"
   bgColor* = glm.vec4(0f/255f, 16f/255f, 64f/255f, 0.95f)
   textColor* = glm.vec4(230f/255f, 235f/255f, 1f, 1f)

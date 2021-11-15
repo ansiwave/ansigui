@@ -1,7 +1,8 @@
 when not defined(emscripten) or defined(emscripten_worker):
   from wavecorepkg/db/vfs import nil
   from ./constants import nil
-  vfs.readUrl = constants.address & "/" & constants.dbFilename
+  from wavecorepkg/board import nil
+  vfs.readUrl = constants.address & "/" & board.sysopPublicKey & "/" & board.dbFilename
   vfs.register()
 
 when defined(emscripten_worker):
