@@ -8,7 +8,6 @@ const
       ""
     else:
       paths.address
-  dbFilename* = "board.db"
   bgColor* = glm.vec4(0f/255f, 16f/255f, 64f/255f, 0.95f)
   textColor* = glm.vec4(230f/255f, 235f/255f, 1f, 1f)
   blackColor* = glm.vec4(0f, 0f, 0f, 1f)
