@@ -63,10 +63,8 @@ proc onMouseMove*(xpos: float, ypos: float) =
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
 
-var clnt: client.Client
-clnt = client.initClient(constants.address)
-client.start(clnt)
 var
+  clnt: client.Client
   session*: bbs.BbsSession
   accessibleText = ""
 
@@ -80,14 +78,13 @@ proc insertAccessibleText(finishedLoading: bool) =
       accessibleText = text
 
 proc init*(game: var Game) =
-  # this must be first!
-  # that way, it will initialize even if the gl stuff below fails
-  session = bbs.initSession(clnt)
+  bbs.init()
+  clnt = client.initClient(constants.address)
+  client.start(clnt)
 
-  try:
-    crypto.loadKey()
-  except Exception as ex:
-    echo ex.msg
+  # this must be done before the gl stuff
+  # that way, it will initialize even if the gl stuff fails
+  session = bbs.initSession(clnt)
 
   doAssert glInit()
 
