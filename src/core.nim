@@ -51,12 +51,13 @@ proc onKeyRelease*(key: iw.Key) =
 proc onChar*(codepoint: uint32) =
   charQueue.addLast(codepoint)
 
-proc onMouseClick*(button: iw.MouseButton) =
+proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction) =
   keyQueue.addLast(iw.Key.Mouse)
   iw.gMouseInfo.button = button
-  iw.gMouseInfo.action = iw.MouseButtonAction.mbaPressed
+  iw.gMouseInfo.action = action
 
 proc onMouseMove*(xpos: float, ypos: float) =
+  keyQueue.addLast(iw.Key.Mouse)
   iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
   iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
 

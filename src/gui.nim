@@ -20,9 +20,13 @@ const
      GLFWKey.PAGE_UP: iw.Key.PageUp,
      GLFWKey.PAGE_DOWN: iw.Key.PageDown
      }.toTable
-  glfwToIllwillMouse =
+  glfwToIllwillMouseButton =
     {GLFWMouseButton.Button1: iw.MouseButton.mbLeft,
      GLFWMouseButton.Button2: iw.MouseButton.mbRight,
+     }.toTable
+  glfwToIllwillMouseAction =
+    {GLFWPress: iw.MouseButtonAction.mbaPressed,
+     GLFWRelease: iw.MouseButtonAction.mbaReleased,
      }.toTable
 
 var
@@ -44,8 +48,8 @@ proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   onChar(codepoint)
 
 proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
-  if action == GLFWPress and glfwToIllwillMouse.hasKey(button):
-    onMouseClick(glfwToIllwillMouse[button])
+  if glfwToIllwillMouseButton.hasKey(button) and glfwToIllwillMouseAction.hasKey(action):
+    onMouseClick(glfwToIllwillMouseButton[button], glfwToIllwillMouseAction[action])
 
 proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
   let
