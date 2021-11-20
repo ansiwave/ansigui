@@ -47,10 +47,6 @@ proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32,
 proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   onChar(codepoint)
 
-proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
-  if glfwToIllwillMouseButton.hasKey(button) and glfwToIllwillMouseAction.hasKey(action):
-    onMouseClick(glfwToIllwillMouseButton[button], glfwToIllwillMouseAction[action])
-
 proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
   let
     mult =
@@ -61,6 +57,15 @@ proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl
     mouseX = xpos * mult
     mouseY = ypos * mult
   onMouseMove(mouseX, mouseY)
+
+proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
+  if glfwToIllwillMouseButton.hasKey(button) and glfwToIllwillMouseAction.hasKey(action):
+    var
+      xpos: float64
+      ypos: float64
+    getCursorPos(window, xpos.addr, ypos.addr)
+    cursorPosCallback(window, xpos, ypos)
+    onMouseClick(glfwToIllwillMouseButton[button], glfwToIllwillMouseAction[action])
 
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
   game.windowWidth = width

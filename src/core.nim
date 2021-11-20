@@ -52,7 +52,6 @@ proc onChar*(codepoint: uint32) =
   charQueue.addLast(codepoint)
 
 proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction) =
-  keyQueue.addLast(iw.Key.Mouse)
   iw.gMouseInfo.button = button
   iw.gMouseInfo.action = action
 
