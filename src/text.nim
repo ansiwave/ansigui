@@ -8,6 +8,7 @@ from strutils import format
 import unicode
 from ./constants import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
+from terminal import nil
 
 const version =
   when defined(emscripten):
@@ -31,32 +32,56 @@ proc fgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Ve
     let (r, g, b) = ch.fgTruecolor
     glm.vec4(r.GLFloat/255f, g.GLFloat/255f, b.GLFloat/255f, 1.GLfloat)
   else:
-    case ch.fg:
-    of iw.fgNone: defaultColor
-    of iw.fgBlack: constants.blackColor
-    of iw.fgRed: constants.redColor
-    of iw.fgGreen: constants.greenColor
-    of iw.fgYellow: constants.yellowColor
-    of iw.fgBlue: constants.blueColor
-    of iw.fgMagenta: constants.magentaColor
-    of iw.fgCyan: constants.cyanColor
-    of iw.fgWhite: constants.whiteColor
+    if terminal.styleBright in ch.style:
+      case ch.fg:
+      of iw.fgNone: defaultColor
+      of iw.fgBlack: constants.blackColor
+      of iw.fgRed: constants.brightRedColor
+      of iw.fgGreen: constants.brightGreenColor
+      of iw.fgYellow: constants.brightYellowColor
+      of iw.fgBlue: constants.brightBlueColor
+      of iw.fgMagenta: constants.brightMagentaColor
+      of iw.fgCyan: constants.brightCyanColor
+      of iw.fgWhite: constants.whiteColor
+    else:
+      case ch.fg:
+      of iw.fgNone: defaultColor
+      of iw.fgBlack: constants.blackColor
+      of iw.fgRed: constants.redColor
+      of iw.fgGreen: constants.greenColor
+      of iw.fgYellow: constants.yellowColor
+      of iw.fgBlue: constants.blueColor
+      of iw.fgMagenta: constants.magentaColor
+      of iw.fgCyan: constants.cyanColor
+      of iw.fgWhite: constants.whiteColor
 
 proc bgColorToVec4(ch: iw.TerminalChar, defaultColor: glm.Vec4[GLfloat]): glm.Vec4[GLfloat] =
   if ch.bgTruecolor != iw.rgbNone:
     let (r, g, b) = ch.bgTruecolor
     glm.vec4(r.GLFloat/255f, g.GLFloat/255f, b.GLFloat/255f, 1.GLfloat)
   else:
-    case ch.bg:
-    of iw.bgNone: defaultColor
-    of iw.bgBlack: constants.blackColor
-    of iw.bgRed: constants.redColor
-    of iw.bgGreen: constants.greenColor
-    of iw.bgYellow: constants.yellowColor
-    of iw.bgBlue: constants.blueColor
-    of iw.bgMagenta: constants.magentaColor
-    of iw.bgCyan: constants.cyanColor
-    of iw.bgWhite: constants.whiteColor
+    if terminal.styleBright in ch.style:
+      case ch.bg:
+      of iw.bgNone: defaultColor
+      of iw.bgBlack: constants.blackColor
+      of iw.bgRed: constants.brightRedColor
+      of iw.bgGreen: constants.brightGreenColor
+      of iw.bgYellow: constants.brightYellowColor
+      of iw.bgBlue: constants.brightBlueColor
+      of iw.bgMagenta: constants.brightMagentaColor
+      of iw.bgCyan: constants.brightCyanColor
+      of iw.bgWhite: constants.whiteColor
+    else:
+      case ch.bg:
+      of iw.bgNone: defaultColor
+      of iw.bgBlack: constants.blackColor
+      of iw.bgRed: constants.redColor
+      of iw.bgGreen: constants.greenColor
+      of iw.bgYellow: constants.yellowColor
+      of iw.bgBlue: constants.blueColor
+      of iw.bgMagenta: constants.magentaColor
+      of iw.bgCyan: constants.cyanColor
+      of iw.bgWhite: constants.whiteColor
 
 type
   AnsiwaveTextEntityUniforms = tuple[
