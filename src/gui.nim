@@ -47,7 +47,7 @@ proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32,
 proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   onChar(codepoint)
 
-proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
+proc mouseMoveCallback(xpos: float64, ypos: float64) =
   let
     mult =
       when defined(emscripten):
@@ -58,13 +58,19 @@ proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl
     mouseY = ypos * mult
   onMouseMove(mouseX, mouseY)
 
+proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
+  mouseMoveCallback(xpos, ypos)
+  let action = getMouseButton(window, GLFWMouseButton.Button1)
+  if glfwToIllwillMouseAction.hasKey(action):
+    onMouseClick(iw.MouseButton.mbLeft, glfwToIllwillMouseAction[action])
+
 proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
   if glfwToIllwillMouseButton.hasKey(button) and glfwToIllwillMouseAction.hasKey(action):
     var
       xpos: float64
       ypos: float64
     getCursorPos(window, xpos.addr, ypos.addr)
-    cursorPosCallback(window, xpos, ypos)
+    mouseMoveCallback(xpos, ypos)
     onMouseClick(glfwToIllwillMouseButton[button], glfwToIllwillMouseAction[action])
 
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
