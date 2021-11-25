@@ -78,13 +78,14 @@ proc insertAccessibleText(finishedLoading: bool) =
       accessibleText = text
 
 proc init*(game: var Game) =
-  bbs.init()
   clnt = client.initClient(constants.address)
   client.start(clnt)
 
   # this must be done before the gl stuff
   # that way, it will initialize even if the gl stuff fails
   session = bbs.initSession(clnt)
+
+  bbs.init(session)
 
   doAssert glInit()
 
