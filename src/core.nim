@@ -32,7 +32,7 @@ var
   baseEntity: ptext.UncompiledTextEntity
   textEntity: text.AnsiwaveTextEntity
   fontMultiplier* = 1/4
-  keyQueue: Deque[iw.Key]
+  keyQueue: Deque[(iw.Key, iw.MouseInfo)]
   charQueue: Deque[uint32]
   viewHeight*: float
 
@@ -43,7 +43,7 @@ proc fontHeight*(): float =
   text.monoFont.height * fontMultiplier
 
 proc onKeyPress*(key: iw.Key) =
-  keyQueue.addLast(key)
+  keyQueue.addLast((key, iw.gMouseInfo))
 
 proc onKeyRelease*(key: iw.Key) =
   discard
@@ -52,9 +52,10 @@ proc onChar*(codepoint: uint32) =
   charQueue.addLast(codepoint)
 
 proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction) =
-  keyQueue.addLast(iw.Key.Mouse)
-  iw.gMouseInfo.button = button
-  iw.gMouseInfo.action = action
+  var info = iw.gMouseInfo
+  info.button = button
+  info.action = action
+  keyQueue.addLast((iw.Key.Mouse, info))
 
 proc onMouseMove*(xpos: float, ypos: float) =
   iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
@@ -116,8 +117,9 @@ proc tick*(game: Game): bool =
     rendered = false
   while keyQueue.len > 0 or charQueue.len > 0:
     let
-      key = if keyQueue.len > 0: keyQueue.popFirst else: iw.Key.None
+      (key, mouseInfo) = if keyQueue.len > 0: keyQueue.popFirst else: (iw.Key.None, iw.gMouseInfo)
       ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
+    iw.gMouseInfo = mouseInfo
     tb = bbs.render(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
     rendered = true
   if not rendered:
