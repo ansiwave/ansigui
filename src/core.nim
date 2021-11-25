@@ -85,7 +85,7 @@ proc init*(game: var Game) =
   # that way, it will initialize even if the gl stuff fails
   session = bbs.initSession(clnt)
 
-  bbs.init(session)
+  bbs.init()
 
   doAssert glInit()
 
