@@ -78,6 +78,10 @@ proc insertAccessibleText(finishedLoading: bool) =
       emscripten.setInnerHtml("#accessible-text", text)
       accessibleText = text
 
+when defined(emscripten):
+  proc hashChanged() {.exportc.} =
+    bbs.insertHash(session, emscripten.getHash())
+
 proc init*(game: var Game) =
   clnt = client.initClient(constants.address)
   client.start(clnt)

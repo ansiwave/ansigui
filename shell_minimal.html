@@ -48,6 +48,11 @@
       window.onkeypress = function(e) {
         e.preventDefault();
       }
+      window.onhashchange = function(e) {
+        try {
+          Module.ccall("hashChanged", null, [], []);
+        } catch (e) {}
+      }
       var Module = {
         preRun: [],
         postRun: [window.onresize],
