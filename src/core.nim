@@ -5,6 +5,7 @@ from ./text import nil
 from paratext/gl/text as ptext import nil
 from ./constants import nil
 import deques
+from wavecorepkg/paths import nil
 
 from ansiwavepkg/crypto import nil
 from ansiwavepkg/bbs import nil
@@ -83,7 +84,7 @@ when defined(emscripten):
     bbs.insertHash(session, emscripten.getHash())
 
 proc init*(game: var Game) =
-  clnt = client.initClient(constants.address)
+  clnt = client.initClient(paths.address, paths.postAddress)
   client.start(clnt)
 
   # this must be done before the gl stuff
