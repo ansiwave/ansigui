@@ -75,6 +75,8 @@
           canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 
           canvas.addEventListener('wheel', function(e){ e.stopImmediatePropagation(); }, true);
+          canvas.addEventListener('touchstart', function(e){ e.stopImmediatePropagation(); }, true);
+          canvas.addEventListener('touchend', function(e){ e.stopImmediatePropagation(); }, true);
 
           return canvas;
         })(),
