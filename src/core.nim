@@ -70,13 +70,17 @@ var
   session*: bbs.BbsSession
   accessibleText = ""
 
-proc insertAccessibleText(finishedLoading: bool) =
+proc insertAccessibleText(finishedLoading: bool, webglSupported: bool) =
   when defined(emscripten):
     var text: string
     if finishedLoading:
       text = bbs.renderHtml(session)
     if text != accessibleText:
-      emscripten.setInnerHtml("#accessible-text", text)
+      if webglSupported:
+        emscripten.setInnerHtml("#accessible-text", text)
+      else:
+        let header = "<div>Your browser doesn't support WebGL 2! Falling back to text-only mode.</div>"
+        emscripten.setInnerHtml("#accessible-text", header & text)
       accessibleText = text
 
 when defined(emscripten):
@@ -148,10 +152,10 @@ proc tick*(game: Game): bool =
   e.scale(fontMultiplier, fontMultiplier)
   render(game, e)
 
-  insertAccessibleText(finishedLoading)
+  insertAccessibleText(finishedLoading, webglSupported = true)
 
   return finishedLoading
 
 proc tickHeadless*(game: Game) =
-  insertAccessibleText(true)
+  insertAccessibleText(true, webglSupported = false)
 
