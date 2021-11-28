@@ -30,6 +30,9 @@ type
     mouseY*: float
 
 var
+  clnt: client.Client
+  session*: bbs.BbsSession
+  accessibleText = ""
   baseEntity: ptext.UncompiledTextEntity
   textEntity: text.AnsiwaveTextEntity
   fontMultiplier* = 1/4
@@ -63,16 +66,11 @@ proc onMouseUpdate*(xpos: float, ypos: float) =
 
 proc onMouseMove*(xpos: float, ypos: float) =
   onMouseUpdate(xpos, ypos)
-  if iw.gMouseInfo.action == iw.MouseButtonAction.mbaPressed:
+  if iw.gMouseInfo.action == iw.MouseButtonAction.mbaPressed and bbs.isEditor(session):
     keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
 
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
-
-var
-  clnt: client.Client
-  session*: bbs.BbsSession
-  accessibleText = ""
 
 proc insertAccessibleText(finishedLoading: bool, webglSupported: bool) =
   when defined(emscripten):
