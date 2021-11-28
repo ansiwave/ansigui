@@ -53,14 +53,18 @@ proc onChar*(codepoint: uint32) =
   charQueue.addLast(codepoint)
 
 proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction) =
-  var info = iw.gMouseInfo
-  info.button = button
-  info.action = action
-  keyQueue.addLast((iw.Key.Mouse, info))
+  iw.gMouseInfo.button = button
+  iw.gMouseInfo.action = action
+  keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
 
-proc onMouseMove*(xpos: float, ypos: float) =
+proc onMouseUpdate*(xpos: float, ypos: float) =
   iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
   iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
+
+proc onMouseMove*(xpos: float, ypos: float) =
+  onMouseUpdate(xpos, ypos)
+  if iw.gMouseInfo.action == iw.MouseButtonAction.mbaPressed:
+    keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
 
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard

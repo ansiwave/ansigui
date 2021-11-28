@@ -64,7 +64,7 @@ proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods:
       xpos: float64
       ypos: float64
     getCursorPos(window, xpos.addr, ypos.addr)
-    cursorPosCallback(window, xpos, ypos)
+    onMouseUpdate(xpos, ypos)
     onMouseClick(glfwToIllwillMouseButton[button], glfwToIllwillMouseAction[action])
 
 proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.} =
