@@ -131,10 +131,10 @@ proc tick*(game: Game): bool =
       (key, mouseInfo) = if keyQueue.len > 0: keyQueue.popFirst else: (iw.Key.None, iw.gMouseInfo)
       ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
     iw.gMouseInfo = mouseInfo
-    tb = bbs.render(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
+    tb = bbs.tick(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
     rendered = true
   if not rendered:
-    tb = bbs.render(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)
+    tb = bbs.tick(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)
 
   termWidth = iw.width(tb)
   termHeight = iw.height(tb)
