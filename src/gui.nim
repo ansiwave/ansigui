@@ -47,15 +47,21 @@ proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32,
 proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   onChar(codepoint)
 
-proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
+proc updateCoords(xpos: var float64, ypos: var float64) =
   let
     mult =
       when defined(emscripten):
         1f
       else:
         pixelDensity
-    mouseX = xpos * mult
-    mouseY = ypos * mult
+  xpos = xpos * mult
+  ypos = ypos * mult
+
+proc cursorPosCallback(window: GLFWWindow, xpos: float64, ypos: float64) {.cdecl.} =
+  var
+    mouseX = xpos
+    mouseY = ypos
+  updateCoords(mouseX, mouseY)
   onMouseMove(mouseX, mouseY)
 
 proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods: int32) {.cdecl.} =
@@ -64,6 +70,7 @@ proc mouseButtonCallback(window: GLFWWindow, button: int32, action: int32, mods:
       xpos: float64
       ypos: float64
     getCursorPos(window, xpos.addr, ypos.addr)
+    updateCoords(xpos, ypos)
     onMouseUpdate(xpos, ypos)
     onMouseClick(glfwToIllwillMouseButton[button], glfwToIllwillMouseAction[action])
 
