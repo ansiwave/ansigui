@@ -260,16 +260,21 @@ proc add*(instancedEntity: var AnsiwaveTextEntity, entity: UncompiledTextEntity,
           font.chars[constants.codepointToGlyph[ch.int32]]
         else: # if char isn't found, use a default one
           font.chars[notFoundCharIndex]
-      color = fgColorToVec4(tchar, fontColor)
+    var
+      bgColor = bgColorToVec4(tchar, fontColor)
+      fgColor = fgColorToVec4(tchar, fontColor)
+    if tchar.cursor:
+      bgColor[3] = 0.7
+      fgColor[3] = 0.7
     if tchar.bg != iw.bgNone:
       var bg = entity
       bg.crop(font.chars[blockCharIndex], result, font.baseline)
-      bg.color(bgColorToVec4(tchar, fontColor))
+      bg.color(bgColor)
       instancedEntity.add(bg)
       instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     var fg = entity
     fg.crop(bakedChar, result, font.baseline)
-    fg.color(color)
+    fg.color(fgColor)
     instancedEntity.add(fg)
     instancedEntity.uniforms.u_char_counts.data[lineNum] += 1
     result += bakedChar.xadvance
