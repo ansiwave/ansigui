@@ -93,11 +93,11 @@ proc init*(game: var Game) =
   clnt = client.initClient(paths.address, paths.postAddress)
   client.start(clnt)
 
+  bbs.init()
+
   # this must be done before the gl stuff
   # that way, it will initialize even if the gl stuff fails
   session = bbs.initSession(clnt)
-
-  bbs.init()
 
   doAssert glInit()
 
