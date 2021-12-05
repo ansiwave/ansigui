@@ -89,6 +89,9 @@ when defined(emscripten):
   proc hashChanged() {.exportc.} =
     bbs.insertHash(session, emscripten.getHash())
 
+  proc getMaxViewSize*(): cint =
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, result.addr)
+
 proc init*(game: var Game) =
   clnt = client.initClient(paths.address, paths.postAddress)
   client.start(clnt)

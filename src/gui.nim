@@ -184,16 +184,21 @@ proc main*() =
   var windowWidth, windowHeight: int32
   window.getWindowSize(windowWidth.addr, windowHeight.addr)
 
-  pixelDensity =
-    when defined(emscripten):
-      emscripten.getPixelDensity()
-    else:
-      max(1f, width / windowWidth)
-  core.fontMultiplier *= pixelDensity
   window.frameSizeCallback(width, height)
 
   proc run() =
     game.init()
+
+    pixelDensity =
+      when defined(emscripten):
+        if core.getMaxViewSize() >= 16384:
+          emscripten.getPixelDensity()
+        else:
+          1f
+      else:
+        max(1f, width / windowWidth)
+    core.fontMultiplier *= pixelDensity
+
     game.totalTime = glfwGetTime()
 
     when defined(emscripten):
