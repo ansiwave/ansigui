@@ -7,7 +7,6 @@ from ./constants import nil
 import deques
 from wavecorepkg/paths import nil
 
-from ansiwavepkg/crypto import nil
 from ansiwavepkg/bbs import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import unicode
