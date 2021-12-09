@@ -38,6 +38,7 @@ var
   keyQueue: Deque[(iw.Key, iw.MouseInfo)]
   charQueue: Deque[uint32]
   viewHeight*: float
+  pixelDensity*: float
 
 proc fontWidth*(): float =
   text.blockWidth * fontMultiplier
@@ -90,6 +91,14 @@ when defined(emscripten):
 
   proc getMaxViewSize*(): cint =
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, result.addr)
+
+  proc getCurrentFocusTop*(): int {.exportc.} =
+    let fontHeight = fontHeight()
+    int(bbs.getCurrentFocusArea(session).top.float * fontHeight / pixelDensity)
+
+  proc getCurrentFocusBottom*(): int {.exportc.} =
+    let fontHeight = fontHeight()
+    int(bbs.getCurrentFocusArea(session).bottom.float * fontHeight / pixelDensity)
 
 proc init*(game: var Game) =
   clnt = client.initClient(paths.address, paths.postAddress)

@@ -63,7 +63,6 @@ const
 var
   game: Game
   window: GLFWWindow
-  pixelDensity: float
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
   if key < 0:
@@ -89,7 +88,7 @@ proc updateCoords(xpos: var float64, ypos: var float64) =
       when defined(emscripten):
         1f
       else:
-        pixelDensity
+        core.pixelDensity
   xpos = xpos * mult
   ypos = ypos * mult
 
@@ -136,7 +135,7 @@ proc mainLoop() {.cdecl.} =
         if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
           window.frameSizeCallback(width, height)
           if bbs.isEditor(core.session):
-            emscripten.setSizeMax("#canvas", pixelDensity, 0,  - int32(core.fontHeight() / 2))
+            emscripten.setSizeMax("#canvas", core.pixelDensity, 0,  - int32(core.fontHeight() / 2))
           else:
             emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.viewHeight.int32)
         ret
@@ -189,7 +188,7 @@ proc main*() =
   proc run() =
     game.init()
 
-    pixelDensity =
+    core.pixelDensity =
       when defined(emscripten):
         if core.getMaxViewSize() >= 16384:
           emscripten.getPixelDensity()
@@ -197,7 +196,7 @@ proc main*() =
           1f
       else:
         max(1f, width / windowWidth)
-    core.fontMultiplier *= pixelDensity
+    core.fontMultiplier *= core.pixelDensity
 
     game.totalTime = glfwGetTime()
 
