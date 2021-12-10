@@ -6,9 +6,11 @@ from paratext/gl/text as ptext import nil
 from ./constants import nil
 import deques
 from wavecorepkg/paths import nil
+from strutils import nil
 
 from ansiwavepkg/bbs import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
+from ansiwavepkg/codes import nil
 import unicode
 
 from wavecorepkg/client import nil
@@ -39,6 +41,7 @@ var
   charQueue: Deque[uint32]
   viewHeight*: float
   pixelDensity*: float
+  failAle*: bool
 
 proc fontWidth*(): float =
   text.blockWidth * fontMultiplier
@@ -139,20 +142,28 @@ proc tick*(game: Game): bool =
     termWidth = int(game.windowWidth.float / fontWidth)
     termHeight = int(game.windowHeight.float / fontHeight)
 
-  var
-    tb: iw.TerminalBuffer
-    rendered = false
-  while keyQueue.len > 0 or charQueue.len > 0:
-    let
-      (key, mouseInfo) = if keyQueue.len > 0: keyQueue.popFirst else: (iw.Key.None, iw.gMouseInfo)
-      ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
-    iw.gMouseInfo = mouseInfo
-    tb = bbs.tick(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
-    when defined(emscripten):
-      updateScroll(key)
-    rendered = true
-  if not rendered:
-    tb = bbs.tick(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)
+  var tb: iw.TerminalBuffer
+
+  if failAle:
+    tb = iw.newTerminalBuffer(termWidth, termHeight)
+    const lines = strutils.splitLines(staticRead("assets/failale.ansiwave"))
+    var y = 0
+    for line in lines:
+      codes.write(tb, 0, y, line)
+      y += 1
+  else:
+    var rendered = false
+    while keyQueue.len > 0 or charQueue.len > 0:
+      let
+        (key, mouseInfo) = if keyQueue.len > 0: keyQueue.popFirst else: (iw.Key.None, iw.gMouseInfo)
+        ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
+      iw.gMouseInfo = mouseInfo
+      tb = bbs.tick(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
+      when defined(emscripten):
+        updateScroll(key)
+      rendered = true
+    if not rendered:
+      tb = bbs.tick(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)
 
   termWidth = iw.width(tb)
   termHeight = iw.height(tb)

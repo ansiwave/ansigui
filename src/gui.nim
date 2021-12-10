@@ -142,6 +142,7 @@ proc mainLoop() {.cdecl.} =
       except Exception as ex:
         stderr.writeLine(ex.msg)
         stderr.writeLine(getStackTrace(ex))
+        core.failAle = true
         false
     else:
       game.tick()
