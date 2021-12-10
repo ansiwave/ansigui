@@ -92,13 +92,18 @@ when defined(emscripten):
   proc getMaxViewSize*(): cint =
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, result.addr)
 
-  proc getCurrentFocusTop*(): int {.exportc.} =
-    let fontHeight = fontHeight()
-    int(bbs.getCurrentFocusArea(session).top.float * fontHeight / pixelDensity)
-
-  proc getCurrentFocusBottom*(): int {.exportc.} =
-    let fontHeight = fontHeight()
-    int(bbs.getCurrentFocusArea(session).bottom.float * fontHeight / pixelDensity)
+  proc updateScroll(key: iw.Key) =
+    case key:
+    of iw.Key.Up:
+      let fontHeight = fontHeight()
+      let top = int32(bbs.getCurrentFocusArea(session).top.float * fontHeight / pixelDensity)
+      emscripten.scrollUp(top)
+    of iw.Key.Down:
+      let fontHeight = fontHeight()
+      let bottom = int32(bbs.getCurrentFocusArea(session).bottom.float * fontHeight / pixelDensity)
+      emscripten.scrollDown(bottom)
+    else:
+      discard
 
 proc init*(game: var Game) =
   clnt = client.initClient(paths.address, paths.postAddress)
@@ -143,6 +148,8 @@ proc tick*(game: Game): bool =
       ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
     iw.gMouseInfo = mouseInfo
     tb = bbs.tick(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
+    when defined(emscripten):
+      updateScroll(key)
     rendered = true
   if not rendered:
     tb = bbs.tick(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)

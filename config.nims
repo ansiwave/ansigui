@@ -29,7 +29,7 @@ when defined(emscripten):
   when defined(emscripten_worker):
     switch("passL", "-o build/worker.js -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_recvAction']\" -s ALLOW_MEMORY_GROWTH=1 -s BUILD_AS_WORKER")
   else:
-    switch("passL", "-o build/index.html -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_insertFile', '_insertPrivateKey', '_hashChanged', '_getCurrentFocusTop', '_getCurrentFocusBottom']\" -s EXPORTED_RUNTIME_METHODS=\"['ccall']\" -s ALLOW_MEMORY_GROWTH=1 --shell-file shell_minimal.html")
+    switch("passL", "-o build/index.html -s USE_WEBGL2=1 -s EXPORTED_FUNCTIONS=\"['_main','_insertFile', '_insertPrivateKey', '_hashChanged']\" -s EXPORTED_RUNTIME_METHODS=\"['ccall']\" -s ALLOW_MEMORY_GROWTH=1 --shell-file shell_minimal.html")
 elif defined(release):
   --app:gui
 
