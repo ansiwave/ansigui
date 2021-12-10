@@ -140,7 +140,8 @@ proc mainLoop() {.cdecl.} =
             emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.viewHeight.int32)
         ret
       except Exception as ex:
-        echo ex.msg
+        stderr.writeLine(ex.msg)
+        stderr.writeLine(getStackTrace(ex))
         false
     else:
       game.tick()
