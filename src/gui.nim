@@ -4,6 +4,11 @@ from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import tables
 from ansiwavepkg/bbs import nil
 import bitops
+from ansiwavepkg/ui/editor import nil
+from strutils import nil
+
+when defined(emscripten):
+  from wavecorepkg/client/emscripten import nil
 
 const
   glfwToIllwillKey =
@@ -186,6 +191,14 @@ proc main*() =
   window.getWindowSize(windowWidth.addr, windowHeight.addr)
 
   window.frameSizeCallback(width, height)
+
+  editor.copyCallback =
+    proc (lines: seq[string]) =
+      let s = strutils.join(lines, "\n")
+      when defined(emscripten):
+        emscripten.copyText(s)
+      else:
+        window.setClipboardString(s)
 
   proc run() =
     game.init()
