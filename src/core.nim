@@ -7,6 +7,7 @@ from ./constants import nil
 import deques
 from wavecorepkg/paths import nil
 from strutils import nil
+import tables
 
 from ansiwavepkg/bbs import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
@@ -18,6 +19,7 @@ from os import joinPath
 
 when defined(emscripten):
   from wavecorepkg/client/emscripten import nil
+  from ansiwavepkg/ui/editor import nil
 
 type
   Game* = object of RootGame
@@ -114,9 +116,15 @@ proc init*(game: var Game) =
 
   bbs.init()
 
+  var hash: Table[string, string]
+  when defined(emscripten):
+    hash = editor.parseHash(emscripten.getHash())
+  if "board" notin hash:
+    hash["board"] = paths.defaultBoard
+
   # this must be done before the gl stuff
   # that way, it will initialize even if the gl stuff fails
-  session = bbs.initSession(clnt)
+  session = bbs.initSession(clnt, hash)
 
   doAssert glInit()
 
