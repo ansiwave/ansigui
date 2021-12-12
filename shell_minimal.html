@@ -66,6 +66,7 @@
         try {
           Module.ccall("hashChanged", null, [], []);
         } catch (e) {}
+        document.documentElement.scrollTop = 0;
       }
       var Module = {
         preRun: [],
