@@ -68,6 +68,7 @@ const
 var
   game: Game
   window: GLFWWindow
+  maxViewSize: int32
 
 proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32, mods: int32) {.cdecl.} =
   if key < 0:
@@ -142,7 +143,7 @@ proc mainLoop() {.cdecl.} =
           if bbs.isEditor(core.session):
             emscripten.setSizeMax("#canvas", core.pixelDensity, 0,  - int32(core.fontHeight() / 2))
           else:
-            emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.viewHeight.int32)
+            emscripten_set_canvas_element_size("#canvas", game.windowWidth, min(core.viewHeight.int32, maxViewSize - (maxViewSize / 4).int32))
         ret
       except Exception as ex:
         stderr.writeLine(ex.msg)
@@ -203,9 +204,10 @@ proc main*() =
   proc run() =
     game.init()
 
+    maxViewSize = core.getMaxViewSize()
     core.pixelDensity =
       when defined(emscripten):
-        if core.getMaxViewSize() >= 16384:
+        if maxViewSize >= 16384:
           emscripten.getPixelDensity()
         else:
           1f
