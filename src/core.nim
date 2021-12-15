@@ -41,7 +41,9 @@ var
   fontMultiplier* = 1/4
   keyQueue: Deque[(iw.Key, iw.MouseInfo)]
   charQueue: Deque[uint32]
-  viewHeight*: float
+  viewHeight*: int32
+  adjustedViewHeight*: int32
+  maxViewSize*: int32
   pixelDensity*: float
   failAle*: bool
 
@@ -101,11 +103,11 @@ when defined(emscripten):
     case key:
     of iw.Key.Up:
       let fontHeight = fontHeight()
-      let top = int32(bbs.getCurrentFocusArea(session).top.float * fontHeight / pixelDensity)
+      let top = int32(bbs.getCurrentFocusArea(session).top.float * fontHeight / pixelDensity * (adjustedViewHeight.float / viewHeight.float))
       emscripten.scrollUp(top)
     of iw.Key.Down:
       let fontHeight = fontHeight()
-      let bottom = int32(bbs.getCurrentFocusArea(session).bottom.float * fontHeight / pixelDensity)
+      let bottom = int32(bbs.getCurrentFocusArea(session).bottom.float * fontHeight / pixelDensity * (adjustedViewHeight.float / viewHeight.float))
       emscripten.scrollDown(bottom)
     else:
       discard
@@ -176,8 +178,9 @@ proc tick*(game: Game): bool =
   termWidth = iw.width(tb)
   termHeight = iw.height(tb)
 
-  let viewWidth = termWidth.float * fontWidth
-  viewHeight = termHeight.float * fontHeight
+  let vWidth = termWidth.float * fontWidth
+  let vHeight = termHeight.float * fontHeight
+  viewHeight = int32(vHeight)
 
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
@@ -186,7 +189,7 @@ proc tick*(game: Game): bool =
     for x in 0 ..< termWidth:
       line.add(tb[x, y])
     discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
-  e.project(viewWidth, viewHeight)
+  e.project(vWidth, vHeight)
   e.translate(0f, 0f)
   e.scale(fontMultiplier, fontMultiplier)
   render(game, e)
