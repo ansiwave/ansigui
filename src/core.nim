@@ -88,7 +88,7 @@ proc insertAccessibleText(finishedLoading: bool, webglSupported: bool) =
       if webglSupported:
         emscripten.setInnerHtml("#accessible-text", text)
       else:
-        let header = "<div>Your browser doesn't support WebGL 2! Falling back to text-only mode.</div>"
+        let header = "<div>Your browser doesn't support ANSIWAVE...falling back to text-only mode.</div>"
         emscripten.setInnerHtml("#accessible-text", header & text)
       accessibleText = text
 
