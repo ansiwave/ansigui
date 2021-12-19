@@ -235,7 +235,8 @@ proc main*() =
     try:
       run()
     except Exception as ex:
-      echo ex.msg
+      stderr.writeLine(ex.msg)
+      stderr.writeLine(getStackTrace(ex))
       emscripten.setDisplay("#canvas", "none")
       emscripten_set_main_loop(mainLoopHeadless, 0, true)
   else:
