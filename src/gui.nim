@@ -78,8 +78,15 @@ proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32,
     else:
       glfwToIllwillKey
   if keys.hasKey(key):
-    let iwKey = keys[key]
-    if action in {GLFW_PRESS, GLFW_REPEAT}:
+    let
+      iwKey = keys[key]
+      actions =
+        # in web version, don't allow repeat arrow keys outside of the editor because the browser can get locked up
+        if defined(emscripten) and iwKey in {iw.Key.Up, iw.Key.Down, iw.Key.Left, iw.Key.Right} and not bbs.isEditor(core.session):
+          {GLFW_PRESS}
+        else:
+          {GLFW_PRESS, GLFW_REPEAT}
+    if action in actions:
       onKeyPress(iwKey)
     elif action == GLFW_RELEASE:
       onKeyRelease(iwKey)
