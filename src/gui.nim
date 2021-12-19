@@ -212,9 +212,9 @@ proc main*() =
   proc run() =
     game.init()
 
-    core.maxViewSize = core.getMaxViewSize()
     core.pixelDensity =
       when defined(emscripten):
+        core.maxViewSize = core.getMaxViewSize()
         if core.maxViewSize >= 16384:
           emscripten.getPixelDensity()
         else:
