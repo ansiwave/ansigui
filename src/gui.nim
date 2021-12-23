@@ -24,7 +24,8 @@ const
      GLFWKey.Home: iw.Key.Home,
      GLFWKey.End: iw.Key.End,
      GLFWKey.PageUp: iw.Key.PageUp,
-     GLFWKey.PageDown: iw.Key.PageDown
+     GLFWKey.PageDown: iw.Key.PageDown,
+     GLFWKey.Insert: iw.Key.Insert,
      }.toTable
   glfwToIllwillCtrlKey =
     {GLFWKey.A: iw.Key.CtrlA,
