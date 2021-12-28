@@ -23,4 +23,4 @@ task emscripten, "Build the emscripten release version":
 requires "nim >= 1.2.6"
 requires "paranim >= 0.11.0"
 requires "paratext >= 0.12.0"
-requires "ansiwave >= 1.0.2"
+requires "ansiwave >= 1.1.0"
