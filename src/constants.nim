@@ -1,6 +1,5 @@
 from glm import nil
 import tables
-from wavecorepkg/paths import nil
 
 const
   bgColor* = glm.vec4(0f/255f, 16f/255f, 64f/255f, 0.95f)

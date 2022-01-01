@@ -17,10 +17,6 @@ import unicode
 from wavecorepkg/client import nil
 from os import joinPath
 
-when defined(emscripten):
-  from wavecorepkg/client/emscripten import nil
-  from ansiwavepkg/ui/editor import nil
-
 type
   Game* = object of RootGame
     deltaTime*: float
@@ -79,39 +75,6 @@ proc onMouseMove*(xpos: float, ypos: float) =
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
 
-proc insertAccessibleText(finishedLoading: bool, webglSupported: bool) =
-  when defined(emscripten):
-    var text: string
-    if finishedLoading:
-      text = bbs.renderHtml(session)
-    if text != accessibleText:
-      if webglSupported:
-        emscripten.setInnerHtml("#accessible-text", text)
-      else:
-        let header = "<div>Your browser doesn't support ANSIWAVE...falling back to text-only mode.</div>"
-        emscripten.setInnerHtml("#accessible-text", header & text)
-      accessibleText = text
-
-when defined(emscripten):
-  proc hashChanged() {.exportc.} =
-    bbs.insertHash(session, emscripten.getHash())
-
-  proc getMaxViewSize*(): cint =
-    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, result.addr)
-
-  proc updateScroll(key: iw.Key) =
-    case key:
-    of iw.Key.Up:
-      let fontHeight = fontHeight()
-      let top = int32(bbs.getCurrentFocusArea(session).top.float * fontHeight / pixelDensity * (adjustedViewHeight.float / viewHeight.float))
-      emscripten.scrollUp(top)
-    of iw.Key.Down:
-      let fontHeight = fontHeight()
-      let bottom = int32(bbs.getCurrentFocusArea(session).bottom.float * fontHeight / pixelDensity * (adjustedViewHeight.float / viewHeight.float))
-      emscripten.scrollDown(bottom)
-    else:
-      discard
-
 proc init*(game: var Game) =
   clnt = client.initClient(paths.address, paths.postAddress)
   client.start(clnt)
@@ -119,8 +82,6 @@ proc init*(game: var Game) =
   bbs.init()
 
   var hash: Table[string, string]
-  when defined(emscripten):
-    hash = editor.parseHash(emscripten.getHash())
   if "board" notin hash:
     hash["board"] = paths.defaultBoard
 
@@ -169,8 +130,6 @@ proc tick*(game: Game): bool =
         ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
       iw.gMouseInfo = mouseInfo
       tb = bbs.tick(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
-      when defined(emscripten):
-        updateScroll(key)
       rendered = true
     if not rendered:
       tb = bbs.tick(session, clnt, termWidth, termHeight, (iw.Key.None, 0'u32), finishedLoading)
@@ -194,10 +153,5 @@ proc tick*(game: Game): bool =
   e.scale(fontMultiplier, fontMultiplier)
   render(game, e)
 
-  insertAccessibleText(finishedLoading, webglSupported = true)
-
   return finishedLoading
-
-proc tickHeadless*(game: Game) =
-  insertAccessibleText(true, webglSupported = false)
 

@@ -7,9 +7,6 @@ import bitops
 from ansiwavepkg/ui/editor import nil
 from strutils import nil
 
-when defined(emscripten):
-  from wavecorepkg/client/emscripten import nil
-
 const
   glfwToIllwillKey =
     {GLFWKey.Backspace: iw.Key.Backspace,
@@ -79,15 +76,8 @@ proc keyCallback(window: GLFWWindow, key: int32, scancode: int32, action: int32,
     else:
       glfwToIllwillKey
   if keys.hasKey(key):
-    let
-      iwKey = keys[key]
-      actions =
-        # in web version, don't allow repeat arrow keys outside of the editor because the browser can get locked up
-        if defined(emscripten) and iwKey in {iw.Key.Up, iw.Key.Down, iw.Key.Left, iw.Key.Right} and not bbs.isEditor(core.session):
-          {GLFW_PRESS}
-        else:
-          {GLFW_PRESS, GLFW_REPEAT}
-    if action in actions:
+    let iwKey = keys[key]
+    if action in {GLFW_PRESS, GLFW_REPEAT}:
       onKeyPress(iwKey)
     elif action == GLFW_RELEASE:
       onKeyRelease(iwKey)
@@ -96,12 +86,7 @@ proc charCallback(window: GLFWWindow, codepoint: uint32) {.cdecl.} =
   onChar(codepoint)
 
 proc updateCoords(xpos: var float64, ypos: var float64) =
-  let
-    mult =
-      when defined(emscripten):
-        1f
-      else:
-        core.pixelDensity
+  let mult = core.pixelDensity
   xpos = xpos * mult
   ypos = ypos * mult
 
@@ -130,45 +115,21 @@ proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.
 proc scrollCallback(window: GLFWWindow, xoffset: float64, yoffset: float64) {.cdecl.} =
   discard
 
-when defined(emscripten):
-  proc emscripten_set_main_loop(f: proc() {.cdecl.}, a: cint, b: bool) {.importc.}
-  proc emscripten_get_canvas_element_size(target: cstring, width: ptr cint, height: ptr cint): cint {.importc.}
-  proc emscripten_set_canvas_element_size(target: cstring, width: cint, height: cint) {.importc.}
-  from wavecorepkg/client/emscripten import nil
-
 proc mainLoop() {.cdecl.} =
-  let ts = glfwGetTime()
-  game.deltaTime = ts - game.totalTime
-  game.totalTime = ts
-  let canSleep =
-    when defined(emscripten):
-      try:
-        let ret = game.tick()
-        var width, height: cint
-        if emscripten_get_canvas_element_size("#canvas", width.addr, height.addr) >= 0:
-          window.frameSizeCallback(width, height)
-          if bbs.isEditor(core.session):
-            emscripten.setSizeMax("#canvas", core.pixelDensity, 0,  - int32(core.fontHeight() / 2))
-            core.adjustedViewHeight = core.viewHeight
-          else:
-            core.adjustedViewHeight = min(core.viewHeight, core.maxViewSize - (core.maxViewSize / 4).int32)
-            emscripten_set_canvas_element_size("#canvas", game.windowWidth, core.adjustedViewHeight)
-        ret
-      except Exception as ex:
-        stderr.writeLine(ex.msg)
-        stderr.writeLine(getStackTrace(ex))
-        core.failAle = true
-        false
+  try:
+    let ts = glfwGetTime()
+    game.deltaTime = ts - game.totalTime
+    game.totalTime = ts
+    let canSleep = game.tick()
+    window.swapBuffers()
+    if canSleep:
+      glfwWaitEvents()
     else:
-      game.tick()
-  window.swapBuffers()
-  if canSleep:
-    glfwWaitEvents()
-  else:
-    glfwPollEvents()
-
-proc mainLoopHeadless() {.cdecl.} =
-  game.tickHeadless()
+      glfwPollEvents()
+  except Exception as ex:
+    stderr.writeLine(ex.msg)
+    stderr.writeLine(getStackTrace(ex))
+    core.failAle = true
 
 proc main*() =
   doAssert glfwInit()
@@ -205,43 +166,17 @@ proc main*() =
   editor.copyCallback =
     proc (lines: seq[string]) =
       let s = strutils.join(lines, "\n")
-      when defined(emscripten):
-        emscripten.copyText(s)
-      else:
-        window.setClipboardString(s)
+      window.setClipboardString(s)
 
-  proc run() =
-    game.init()
+  game.init()
 
-    core.pixelDensity =
-      when defined(emscripten):
-        core.maxViewSize = core.getMaxViewSize()
-        if core.maxViewSize >= 16384:
-          emscripten.getPixelDensity()
-        else:
-          1f
-      else:
-        max(1f, width / windowWidth)
-    core.fontMultiplier *= core.pixelDensity
+  core.pixelDensity = max(1f, width / windowWidth)
+  core.fontMultiplier *= core.pixelDensity
 
-    game.totalTime = glfwGetTime()
+  game.totalTime = glfwGetTime()
 
-    when defined(emscripten):
-      emscripten_set_main_loop(mainLoop, 0, true)
-    else:
-      while not window.windowShouldClose:
-        mainLoop()
-
-  when defined(emscripten):
-    try:
-      run()
-    except Exception as ex:
-      stderr.writeLine(ex.msg)
-      stderr.writeLine(getStackTrace(ex))
-      emscripten.setDisplay("#canvas", "none")
-      emscripten_set_main_loop(mainLoopHeadless, 0, true)
-  else:
-    run()
+  while not window.windowShouldClose:
+    mainLoop()
 
   window.destroyWindow()
   glfwTerminate()

@@ -10,11 +10,7 @@ from ./constants import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 from terminal import nil
 
-const version =
-  when defined(emscripten):
-    "300 es"
-  else:
-    "330"
+const version = "330"
 
 const
   monoFontRaw = staticRead("assets/3270-Regular.ttf")
