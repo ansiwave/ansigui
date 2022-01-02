@@ -1,4 +1,5 @@
 --app:gui
 --define:chafa
---define:staticSqlite
 --threads:on
+--define:staticSqlite
+--define:multiplexSqlite
