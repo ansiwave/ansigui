@@ -38,7 +38,6 @@ var
   keyQueue: Deque[(iw.Key, iw.MouseInfo)]
   charQueue: Deque[uint32]
   viewHeight*: int32
-  adjustedViewHeight*: int32
   maxViewSize*: int32
   pixelDensity*: float
   failAle*: bool
@@ -65,7 +64,7 @@ proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction) =
 
 proc onMouseUpdate*(xpos: float, ypos: float) =
   iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
-  iw.gMouseInfo.y = int((ypos * (viewHeight.float / adjustedViewHeight.float)) / fontHeight() - 0.25)
+  iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
 
 proc onMouseMove*(xpos: float, ypos: float) =
   onMouseUpdate(xpos, ypos)
