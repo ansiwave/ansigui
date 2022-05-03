@@ -1,4 +1,4 @@
-from glm import nil
+from paranim/glm import nil
 import tables
 
 const

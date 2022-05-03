@@ -1,8 +1,7 @@
-import nimgl/glfw
+import paranim/glfw
 import core
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 import tables
-from ansiwavepkg/bbs import nil
 import bitops
 from ansiwavepkg/ui/editor import nil
 from strutils import nil

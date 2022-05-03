@@ -1,6 +1,6 @@
-import nimgl/opengl
+import paranim/opengl
 import paranim/gl, paranim/gl/entities
-from glm import vec4
+from paranim/glm import vec4
 from ./text import nil
 from paratext/gl/text as ptext import nil
 from ./constants import nil
@@ -12,10 +12,8 @@ import tables
 from ansiwavepkg/bbs import nil
 from ansiwavepkg/illwill as iw import `[]`, `[]=`
 from ansiwavepkg/codes import nil
-import unicode
 
 from wavecorepkg/client import nil
-from os import joinPath
 
 type
   Game* = object of RootGame
