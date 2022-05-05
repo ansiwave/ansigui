@@ -34,8 +34,6 @@ var
   fontMultiplier* = 1/4
   keyQueue: Deque[(iw.Key, iw.MouseInfo)]
   charQueue: Deque[uint32]
-  viewHeight*: int32
-  maxViewSize*: int32
   pixelDensity*: float
   failAle*: bool
 
@@ -135,7 +133,6 @@ proc tick*(game: Game): bool =
 
   let vWidth = termWidth.float * fontWidth
   let vHeight = termHeight.float * fontHeight
-  viewHeight = int32(vHeight)
 
   var e = gl.copy(textEntity)
   text.updateUniforms(e, 0, 0, false)
