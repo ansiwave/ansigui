@@ -29,7 +29,6 @@ type
 var
   clnt: client.Client
   session*: bbs.BbsSession
-  accessibleText = ""
   baseEntity: ptext.UncompiledTextEntity
   textEntity: text.AnsiwaveTextEntity
   fontMultiplier* = 1/4

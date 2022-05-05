@@ -114,22 +114,6 @@ proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.
 proc scrollCallback(window: GLFWWindow, xoffset: float64, yoffset: float64) {.cdecl.} =
   discard
 
-proc mainLoop() {.cdecl.} =
-  try:
-    let ts = glfwGetTime()
-    game.deltaTime = ts - game.totalTime
-    game.totalTime = ts
-    let canSleep = game.tick()
-    window.swapBuffers()
-    if canSleep:
-      glfwWaitEvents()
-    else:
-      glfwPollEvents()
-  except Exception as ex:
-    stderr.writeLine(ex.msg)
-    stderr.writeLine(getStackTrace(ex))
-    core.failAle = true
-
 proc main*() =
   doAssert glfwInit()
 
@@ -175,7 +159,20 @@ proc main*() =
   game.totalTime = glfwGetTime()
 
   while not window.windowShouldClose:
-    mainLoop()
+    try:
+      let ts = glfwGetTime()
+      game.deltaTime = ts - game.totalTime
+      game.totalTime = ts
+      let canSleep = game.tick()
+      window.swapBuffers()
+      if canSleep:
+        glfwWaitEvents()
+      else:
+        glfwPollEvents()
+    except Exception as ex:
+      stderr.writeLine(ex.msg)
+      stderr.writeLine(getStackTrace(ex))
+      core.failAle = true
 
   window.destroyWindow()
   glfwTerminate()
