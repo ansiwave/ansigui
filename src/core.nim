@@ -1,19 +1,34 @@
 import paranim/opengl
 import paranim/gl, paranim/gl/entities
 from paranim/glm import vec4
-from ./text import nil
-from paratext/gl/text as ptext import nil
-from ./constants import nil
+from paratext/gl/text import nil
+from paratext import nil
 import deques
 from wavecorepkg/paths import nil
 from strutils import nil
-import tables
+import tables, unicode
+
+from illwave as iw import `[]`, `[]=`, `==`
 
 from ansiwavepkg/bbs import nil
-from ansiwavepkg/illwill as iw import `[]`, `[]=`
-from ansiwavepkg/codes import nil
 
 from wavecorepkg/client import nil
+
+from nimwave/gui import nil
+from nimwave/tui import nil
+
+const
+  monoFontRaw = staticRead("assets/3270-Regular.ttf")
+  charCount = gui.codepointToGlyph.len
+  blockCharIndex = gui.codepointToGlyph["█".toRunes[0].int32]
+  bgColor = glm.vec4(0f/255f, 16f/255f, 64f/255f, 0.95f)
+  textColor = glm.vec4(230f/255f, 235f/255f, 1f, 1f)
+
+let
+  monoFont = paratext.initFont(ttf = monoFontRaw, fontHeight = 80,
+                               ranges = gui.charRanges,
+                               bitmapWidth = 2048, bitmapHeight = 2048, charCount = charCount)
+  blockWidth = monoFont.chars[blockCharIndex].xadvance
 
 type
   Game* = object of RootGame
@@ -29,8 +44,8 @@ type
 var
   clnt: client.Client
   session*: bbs.BbsSession
-  baseEntity: ptext.UncompiledTextEntity
-  textEntity: text.AnsiwaveTextEntity
+  baseEntity: text.UncompiledTextEntity
+  textEntity: gui.NimwaveTextEntity
   fontMultiplier* = 1/4
   keyQueue: Deque[(iw.Key, iw.MouseInfo)]
   charQueue: Deque[uint32]
@@ -38,10 +53,10 @@ var
   failAle*: bool
 
 proc fontWidth*(): float =
-  text.blockWidth * fontMultiplier
+  blockWidth * fontMultiplier
 
 proc fontHeight*(): float =
-  text.monoFont.height * fontMultiplier
+  monoFont.height * fontMultiplier
 
 proc onKeyPress*(key: iw.Key) =
   keyQueue.addLast((key, iw.gMouseInfo))
@@ -90,11 +105,11 @@ proc init*(game: var Game) =
   glDisable(GL_CULL_FACE)
   glDisable(GL_DEPTH_TEST)
 
-  baseEntity = ptext.initTextEntity(text.monoFont)
-  textEntity = compile(game, text.initInstancedEntity(baseEntity, text.monoFont))
+  baseEntity = text.initTextEntity(monoFont)
+  textEntity = compile(game, gui.initInstancedEntity(baseEntity, monoFont))
 
 proc tick*(game: Game): bool =
-  glClearColor(constants.bgColor.arr[0], constants.bgColor.arr[1], constants.bgColor.arr[2], constants.bgColor.arr[3])
+  glClearColor(bgColor.arr[0], bgColor.arr[1], bgColor.arr[2], bgColor.arr[3])
   glClear(GL_COLOR_BUFFER_BIT)
   glViewport(0, 0, GLsizei(game.windowWidth), GLsizei(game.windowHeight))
 
@@ -114,7 +129,7 @@ proc tick*(game: Game): bool =
     const lines = strutils.splitLines(staticRead("assets/failale.ansiwave"))
     var y = 0
     for line in lines:
-      codes.write(tb, 0, y, line)
+      tui.write(tb, 0, y, line)
       y += 1
   else:
     var rendered = false
@@ -135,12 +150,12 @@ proc tick*(game: Game): bool =
   let vHeight = termHeight.float * fontHeight
 
   var e = gl.copy(textEntity)
-  text.updateUniforms(e, 0, 0, false)
+  gui.updateUniforms(e, 0, 0, false)
   for y in 0 ..< termHeight:
     var line: seq[iw.TerminalChar]
     for x in 0 ..< termWidth:
       line.add(tb[x, y])
-    discard text.addLine(e, baseEntity, text.monoFont, constants.textColor, line)
+    discard gui.addLine(e, baseEntity, monoFont, gui.codepointToGlyph, textColor, line)
   e.project(vWidth, vHeight)
   e.translate(0f, 0f)
   e.scale(fontMultiplier, fontMultiplier)
