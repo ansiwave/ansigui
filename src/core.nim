@@ -67,17 +67,16 @@ proc onKeyRelease*(key: iw.Key) =
 proc onChar*(codepoint: uint32) =
   charQueue.addLast(codepoint)
 
-proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction) =
+proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction, xpos: float, ypos: float) =
   iw.gMouseInfo.button = button
   iw.gMouseInfo.action = action
-  keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
-
-proc onMouseUpdate*(xpos: float, ypos: float) =
   iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
   iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
+  keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
 
 proc onMouseMove*(xpos: float, ypos: float) =
-  onMouseUpdate(xpos, ypos)
+  iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
+  iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
   if iw.gMouseInfo.action == iw.MouseButtonAction.mbaPressed and bbs.isEditor(session):
     keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
 
