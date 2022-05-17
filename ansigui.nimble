@@ -15,5 +15,5 @@ task dev, "Run dev version":
 requires "nim >= 1.6.4"
 requires "paranim >= 0.12.0"
 requires "paratext >= 0.13.0"
-requires "ansiwave >= 1.6.0"
+requires "ansiwave >= 1.7.0"
 requires "nimwave >= 0.1.0"
