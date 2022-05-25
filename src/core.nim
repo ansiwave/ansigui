@@ -11,6 +11,7 @@ import tables, unicode
 from illwave as iw import `[]`, `[]=`, `==`
 
 from ansiwavepkg/bbs import nil
+from ansiwavepkg/ui/context import nil
 
 from wavecorepkg/client import nil
 
@@ -59,7 +60,7 @@ proc fontHeight*(): float =
   monoFont.height * fontMultiplier
 
 proc onKeyPress*(key: iw.Key) =
-  keyQueue.addLast((key, iw.gMouseInfo))
+  keyQueue.addLast((key, context.mouseInfo))
 
 proc onKeyRelease*(key: iw.Key) =
   discard
@@ -68,17 +69,17 @@ proc onChar*(codepoint: uint32) =
   charQueue.addLast(codepoint)
 
 proc onMouseClick*(button: iw.MouseButton, action: iw.MouseButtonAction, xpos: float, ypos: float) =
-  iw.gMouseInfo.button = button
-  iw.gMouseInfo.action = action
-  iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
-  iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
-  keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
+  context.mouseInfo.button = button
+  context.mouseInfo.action = action
+  context.mouseInfo.x = int(xpos / fontWidth() - 0.25)
+  context.mouseInfo.y = int(ypos / fontHeight() - 0.25)
+  keyQueue.addLast((iw.Key.Mouse, context.mouseInfo))
 
 proc onMouseMove*(xpos: float, ypos: float) =
-  iw.gMouseInfo.x = int(xpos / fontWidth() - 0.25)
-  iw.gMouseInfo.y = int(ypos / fontHeight() - 0.25)
-  if iw.gMouseInfo.action == iw.MouseButtonAction.mbaPressed and bbs.isEditor(session):
-    keyQueue.addLast((iw.Key.Mouse, iw.gMouseInfo))
+  context.mouseInfo.x = int(xpos / fontWidth() - 0.25)
+  context.mouseInfo.y = int(ypos / fontHeight() - 0.25)
+  if context.mouseInfo.action == iw.MouseButtonAction.mbaPressed and bbs.isEditor(session):
+    keyQueue.addLast((iw.Key.Mouse, context.mouseInfo))
 
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
@@ -134,9 +135,9 @@ proc tick*(game: Game): bool =
     var rendered = false
     while keyQueue.len > 0 or charQueue.len > 0:
       let
-        (key, mouseInfo) = if keyQueue.len > 0: keyQueue.popFirst else: (iw.Key.None, iw.gMouseInfo)
+        (key, mouseInfo) = if keyQueue.len > 0: keyQueue.popFirst else: (iw.Key.None, context.mouseInfo)
         ch = if charQueue.len > 0 and key == iw.Key.None: charQueue.popFirst else: 0
-      iw.gMouseInfo = mouseInfo
+      context.mouseInfo = mouseInfo
       tb = bbs.tick(session, clnt, termWidth, termHeight, (key, ch), finishedLoading)
       rendered = true
     if not rendered:
