@@ -84,6 +84,13 @@ proc onMouseMove*(xpos: float, ypos: float) =
 proc onWindowResize*(windowWidth: int, windowHeight: int) =
   discard
 
+proc onScroll*(xoffset: float, yoffset: float) =
+  # treat scrolling up/down the same as arrow up/down
+  if yoffset < 0:
+    keyQueue.addLast((iw.Key.Down, context.mouseInfo))
+  elif yoffset > 0:
+    keyQueue.addLast((iw.Key.Up, context.mouseInfo))
+
 proc init*(game: var Game) =
   clnt = client.initClient(paths.address, paths.postAddress)
   client.start(clnt)

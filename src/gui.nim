@@ -55,7 +55,7 @@ proc frameSizeCallback(window: GLFWWindow, width: int32, height: int32) {.cdecl.
   core.onWindowResize(game.windowWidth, game.windowHeight)
 
 proc scrollCallback(window: GLFWWindow, xoffset: float64, yoffset: float64) {.cdecl.} =
-  discard
+  core.onScroll(xoffset, yoffset)
 
 proc main*() =
   doAssert glfwInit()
